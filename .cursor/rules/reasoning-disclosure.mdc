@@ -1,0 +1,32 @@
+---
+description: 작업 시 판단 근거를 명시하는 규칙. 컴포넌트 생성/배치, React/Next.js 구현 결정 시 항상 적용.
+alwaysApply: true
+---
+
+# 작업 근거 명시 규칙
+
+코드 작업 후 반드시 판단 근거를 간략히 언급한다.
+
+## 컴포넌트 생성 · 파일 위치 결정 시
+
+파일을 생성하거나 위치를 결정할 때, 어떤 FSD 레이어/원칙을 근거로 해당 위치를 선택했는지 밝힌다.
+
+예시 형식:
+> **[FSD 근거]** 이 컴포넌트는 특정 도메인(design)에 종속된 UI이므로 `entities/design/ui/`에 배치했습니다.
+> **[FSD 근거]** 사용자 액션(구매 클릭)을 처리하므로 `features/purchase/ui/`가 적합합니다.
+> **[FSD 근거]** 여러 feature를 조합한 페이지 단위 블록이므로 `widgets/`에 위치시켰습니다.
+
+## React / Next.js 구현 결정 시
+
+React 또는 Next.js 관련 구현 방식을 선택할 때, 어떤 React Best Practices 원칙을 근거로 했는지 밝힌다.
+
+예시 형식:
+> **[React-Best-Practices 근거]** 두 fetch가 서로 의존하지 않으므로 `Promise.all`로 병렬 처리했습니다. (워터폴 제거)
+> **[React-Best-Practices 근거]** 초기값 계산이 무거우므로 `useState(() => ...)` lazy initialization을 사용했습니다.
+> **[React-Best-Practices 근거]** 클라이언트 번들 크기를 줄이기 위해 Server Component로 구현했습니다.
+
+## 원칙
+
+- 근거 언급은 작업 또는 설명 **전에** 먼저 밝히고, 그 다음에 작업을 진행한다.
+- 모든 결정마다 쓸 필요는 없고, **비자명한 판단**이 있을 때만 언급한다.
+- 근거 없이 관례적으로 배치하는 경우(예: layout.tsx는 app/에)는 생략해도 된다.
