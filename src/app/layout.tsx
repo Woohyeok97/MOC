@@ -2,6 +2,11 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Noto_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/shared/lib/utils';
+import { getCurrentUser } from '@/features/auth/api/getCurrentUser';
+// components
+import { AuthProvider } from '@/features/auth';
+import { Footer } from '@/widgets/footer';
+import { Header } from '@/widgets/header';
 
 const notoSans = Noto_Sans({ variable: '--font-sans' });
 
@@ -20,14 +25,20 @@ export const metadata: Metadata = {
   description: 'A marketplace where LEGO creators share building instructions and anyone can download them for free.'
 };
 
-export default function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const user = await getCurrentUser();
+
   return (
     <html lang="en" className={cn('font-sans', notoSans.variable)}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AuthProvider initialUser={user}>
+          <div className="bg-background flex min-h-screen flex-col">
+            <Header />
+            <main className="flex min-h-0 flex-1">{children}</main>
+            <Footer />
+          </div>
+        </AuthProvider>
+      </body>
     </html>
   );
 }
