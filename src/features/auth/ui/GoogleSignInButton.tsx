@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { createClient } from '@/shared/api/supabase/client';
 // components
@@ -41,7 +42,7 @@ export function GoogleSignInButton() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback`, // 로그인이 완료된 후 리다이렉트할 페이지 URL
           queryParams: {
             prompt: 'select_account'
           }

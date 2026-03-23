@@ -8,7 +8,7 @@ export default function SignInPage() {
           <div className="bg-primary mb-4 flex h-14 w-14 items-center justify-center rounded-xl">
             <div className="h-7 w-7 rounded-full bg-white" />
           </div>
-          <h1 className="mb-2 text-xl font-extrabold tracking-tight md:text-2xl">Design Market</h1>
+          <h1 className="mb-2 text-xl font-extrabold tracking-tight md:text-2xl">MOC</h1>
           <p className="text-muted-foreground max-w-[260px] text-sm leading-relaxed">
             Discover and collect the world&apos;s most exceptional digital assets.
           </p>
