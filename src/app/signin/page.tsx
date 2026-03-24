@@ -39,9 +39,9 @@ export default function SignInPage() {
 }
 
 // // components
-// import { Footer } from '@/widgets/footer';
+// import { Footer } from '@/widgets/Footer';
 // import { GoogleSignInButton } from '@/features/auth';
-// import { Header } from '@/widgets/header';
+// import { Header } from '@/widgets/Header';
 
 // export default function SignInPage() {
 //   return (

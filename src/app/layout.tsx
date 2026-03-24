@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Noto_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/shared/lib/utils';
-import { getCurrentUser } from '@/features/auth/api/getCurrentUser';
+import { getCurrentUser } from '@/features/auth';
 // components
 import { AuthProvider } from '@/features/auth';
-import { Footer } from '@/widgets/footer';
-import { Header } from '@/widgets/header';
+import { Footer } from '@/widgets/Footer';
+import { Header } from '@/widgets/Header';
 
 const notoSans = Noto_Sans({ variable: '--font-sans' });
 
