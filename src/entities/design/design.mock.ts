@@ -1,0 +1,124 @@
+import type { Design } from './design.type';
+
+export const MOCK_DESIGNS: Design[] = [
+  {
+    id: '1',
+    title: '중세 성채 - 블랙 팔콘 요새',
+    description: '중세 시대 블랙 팔콘 기사단의 요새를 재현한 MOC 디자인',
+    category: 'castles',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-castle/600/800'],
+    authorId: 'BrickMaster',
+    createdAt: new Date('2024-03-15'),
+    updatedAt: new Date('2024-03-15')
+  },
+  {
+    id: '2',
+    title: '사이버펑크 레이서 V2',
+    description: '네온 빛이 감도는 미래형 레이싱카',
+    category: 'vehicles',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-mech/600/400'],
+    authorId: 'NeoBricks',
+    createdAt: new Date('2024-03-20'),
+    updatedAt: new Date('2024-03-20')
+  },
+  {
+    id: '3',
+    title: '모듈러 서점 & 카페',
+    description: '도시 시리즈에 어울리는 모듈러 건물',
+    category: 'architecture',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-modular/600/900'],
+    authorId: 'CityBuilder',
+    createdAt: new Date('2024-02-28'),
+    updatedAt: new Date('2024-02-28')
+  },
+  {
+    id: '4',
+    title: 'UCS급 X-윙 스타파이터',
+    description: '정밀하게 재현한 UCS 스케일 X-윙',
+    category: 'vehicles',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-space/600/600'],
+    authorId: 'StarDesigner',
+    createdAt: new Date('2024-03-10'),
+    updatedAt: new Date('2024-03-10')
+  },
+  {
+    id: '5',
+    title: '테크닉 오프로드 트럭',
+    description: '작동하는 서스펜션이 포함된 테크닉 트럭',
+    category: 'vehicles',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-technic/600/700'],
+    authorId: 'GearHead',
+    createdAt: new Date('2024-03-05'),
+    updatedAt: new Date('2024-03-05')
+  },
+  {
+    id: '6',
+    title: '심해 탐사 잠수함',
+    description: '깊은 바다를 탐사하는 미니 잠수함',
+    category: 'vehicles',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-sub/600/500'],
+    authorId: 'OceanBrick',
+    createdAt: new Date('2024-01-20'),
+    updatedAt: new Date('2024-01-20')
+  },
+  {
+    id: '7',
+    title: '드래곤 나이트의 은신처',
+    description: '드래곤과 기사단의 비밀 은신처',
+    category: 'castles',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-dragon/600/850'],
+    authorId: 'FantasyBuild',
+    createdAt: new Date('2024-03-22'),
+    updatedAt: new Date('2024-03-22')
+  },
+  {
+    id: '8',
+    title: '미래형 전투 로봇 RX-7',
+    description: '조종석이 열리는 대형 전투 로봇',
+    category: 'robots',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-robot/600/750'],
+    authorId: 'MechLab',
+    createdAt: new Date('2024-03-18'),
+    updatedAt: new Date('2024-03-18')
+  },
+  {
+    id: '9',
+    title: '유럽풍 기차역',
+    description: '클래식한 유럽 스타일 기차역',
+    category: 'architecture',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-train/600/950'],
+    authorId: 'TrainFan',
+    createdAt: new Date('2024-02-15'),
+    updatedAt: new Date('2024-02-15')
+  },
+  {
+    id: '10',
+    title: '테크닉 스포츠카 GT',
+    description: '작동하는 기어박스를 포함한 스포츠카',
+    category: 'vehicles',
+    price: 0,
+    instructions: [],
+    images: ['https://picsum.photos/seed/lego-car/600/650'],
+    authorId: 'Speedy',
+    createdAt: new Date('2024-03-12'),
+    updatedAt: new Date('2024-03-12')
+  }
+];

@@ -1,4 +1,4 @@
-import { GoogleSignInButton } from '@/features/auth';
+import { GoogleSignInButton } from '@/features/auth/ui/GoogleSignInButton';
 
 export default function SignInPage() {
   return (

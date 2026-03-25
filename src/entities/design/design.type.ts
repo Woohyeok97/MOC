@@ -1,1 +1,1 @@
-export type { Design } from '@/generated/prisma/client';
+export type { Design, DesignCategory } from '@/generated/prisma/client';

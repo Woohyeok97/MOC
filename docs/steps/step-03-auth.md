@@ -85,8 +85,6 @@
 
 13. `layout.tsx`에 `Header`, `Footer` 추가 (전역 공통 레이아웃)
 
-14. `features/auth/index.ts`, `widgets/header/index.ts`, `widgets/footer/index.ts` Public API 정리
-
 ---
 
 ## 구현 지침
@@ -105,7 +103,7 @@
 
 - **보호된 페이지 목록**: `/designs/new`, `/my/purchases`, `/my/designs`. 이 경로에 비로그인 접근 시 `/signin`으로 리다이렉트. `proxy.ts` 또는 각 페이지 서버 컴포넌트에서 처리.
 
-- **FSD 레이어 준수**: 로그인/로그아웃/store는 `features/auth/`에, 헤더는 `widgets/header/`에 위치. 외부에서는 반드시 `index.ts`를 통해서만 import.
+- **FSD 레이어 준수**: 로그인/로그아웃/store는 `features/auth/`에, 헤더는 `widgets/`에 위치.
 
 ---
 
