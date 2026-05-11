@@ -19,9 +19,9 @@ export function Sidebar() {
           <button className="rounded-full p-3 text-zinc-500 transition-colors hover:bg-zinc-100">
             <Filter className="h-6 w-6" />
           </button>
-          <button className="rounded-full p-3 text-zinc-500 transition-colors hover:bg-zinc-100">
+          <Link href="/designs/new" className="rounded-full p-3 text-zinc-500 transition-colors hover:bg-zinc-100">
             <PlusSquare className="h-6 w-6" />
-          </button>
+          </Link>
         </div>
 
         <div className="mt-auto flex flex-col space-y-2">
@@ -46,9 +46,9 @@ export function Sidebar() {
         <button className="p-2 text-zinc-500">
           <Filter className="h-6 w-6" />
         </button>
-        <button className="p-2 text-zinc-500">
+        <Link href="/designs/new" className="p-2 text-zinc-500">
           <PlusSquare className="h-6 w-6" />
-        </button>
+        </Link>
         <button className="p-2 text-zinc-500">
           <User className="h-6 w-6" />
         </button>
