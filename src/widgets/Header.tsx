@@ -1,63 +1,90 @@
-import { getCurrentUser } from '@/features/auth/auth.api';
-import { signOut } from '@/features/auth/auth.actions';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/shared/ui/button';
-import { Search } from 'lucide-react';
-import { ChevronDown } from 'lucide-react';
+'use client';
 
-export async function Header() {
-  const user = await getCurrentUser();
+// components
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { Search, LogOut } from 'lucide-react';
+import { Button } from '@/shared/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem
+} from '@/shared/ui/dropdown';
+// store & actions
+import { useAuthStore } from '@/features/auth/auth.store';
+import { signOut } from '@/features/auth/auth.actions';
+
+// 상단 내비게이션 바 (로고 + 검색 + 아바타 드롭다운)
+export function Header() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchValue, setSearchValue] = useState(searchParams.get('query') ?? '');
+  const user = useAuthStore(state => state.user);
+
+  // 검색어를 URL 쿼리 파라미터에 반영하는 핸들러 (빈 값이면 파라미터 제거)
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set('query', value);
+    } else {
+      params.delete('query');
+    }
+    router.replace(`/?${params.toString()}`);
+  };
 
   return (
-    <header className="sticky top-0 z-40 hidden items-center gap-4 bg-white px-4 py-3 md:flex">
-      <div className="flex-1">
-        <div className="group relative">
-          <Search className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-          <input
-            type="text"
-            placeholder="검색"
-            className="w-full rounded-full border-none bg-[#E9E9E9] py-2.5 pr-4 pl-12 text-base font-normal transition-all outline-none placeholder:text-zinc-500 focus:bg-[#E1E1E1]"
-          />
-        </div>
+    <header className="flex h-[52px] shrink-0 items-center gap-3 border-b border-[#efefef] bg-white px-4">
+      {/* 로고 */}
+      <Link href="/" className="flex shrink-0 items-center gap-1">
+        <span className="text-[20px] leading-none font-bold tracking-[-0.5px] text-[#211922]">MOC</span>
+        <span className="bg-primary mb-1 inline-block h-1.5 w-1.5 rounded-full" />
+      </Link>
+
+      {/* 검색창 */}
+      <div className="focus-within:border-primary flex flex-1 items-center gap-2 rounded-full border border-transparent bg-[#efefef] px-3.5 py-[7px] transition-all duration-150 focus-within:shadow-[0_0_0_3px_rgba(0,102,255,0.12)]">
+        <Search size={15} className="shrink-0 text-[#767676]" />
+        <input
+          type="text"
+          placeholder="검색"
+          value={searchValue}
+          onChange={event => handleSearch(event.target.value)}
+          className="w-full bg-transparent text-[13px] text-[#211922] outline-none placeholder:text-[#767676]"
+        />
       </div>
 
-      <div className="flex items-center gap-1">
-        {user ? (
-          <div className="flex items-center gap-3">
-            <Link href="#">
-              <Image
-                src={user.avatarUrl}
-                alt={user.name ? `${user.name} avatar` : 'User avatar'}
-                width={32}
-                height={32}
-                className="h-10 w-10 rounded-full object-cover"
-              />
-            </Link>
-            <form action={signOut}>
-              <Button
-                variant="outline"
-                size="lg"
-                type="submit"
-                className="text-primary h-10 cursor-pointer rounded-full text-sm font-semibold transition-colors hover:opacity-90">
-                Sign Out
-              </Button>
-            </form>
-            {/* <button className="rounded-full p-2 text-zinc-500 transition-colors hover:bg-zinc-100">
-              <ChevronDown className="h-5 w-5" />
-            </button> */}
-          </div>
-        ) : (
-          <Link href="/signin">
-            <Button
-              variant="outline"
-              size="lg"
-              className="text-primary h-10 cursor-pointer rounded-full text-sm font-semibold transition-colors hover:opacity-90">
-              Sign In
-            </Button>
-          </Link>
-        )}
-      </div>
+      {/* 로그인 상태에 따라 아바타 드롭다운 또는 로그인 버튼 표시 */}
+      {user ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger className="h-[34px] w-[34px] overflow-hidden rounded-full bg-[#e0e0d9] ring-offset-0 outline-none data-[state=open]:ring-2 data-[state=open]:ring-[#211922]">
+            <span className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-[#62625b]">
+              {user.name?.[0] ?? '?'}
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" sideOffset={8}>
+            <DropdownMenuLabel className="px-2.5 py-2 text-[13px] font-bold text-[#211922]">
+              {user.name}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive" asChild>
+              <form action={signOut}>
+                <button type="submit" className="flex w-full items-center gap-2.5">
+                  <LogOut size={15} />
+                  로그아웃
+                </button>
+              </form>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Button variant="default" size="sm" className="h-[34px]" asChild>
+          <Link href="/signin">로그인</Link>
+        </Button>
+      )}
     </header>
   );
 }

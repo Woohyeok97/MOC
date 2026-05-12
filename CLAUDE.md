@@ -39,6 +39,8 @@ src/
 
 **폼 검증**: React Hook Form + Zod.
 
+**shared/ui 우선 사용**: 새 컴포넌트 작성 전 `src/shared/ui/`에 적합한 컴포넌트(Button, Badge, Input 등)가 있는지 먼저 확인하고 적극 재사용할 것. 필요한 컴포넌트가 없다면(shadcn/ui 기준) 구현 전에 해당 디렉토리에 추가할지 사용자에게 먼저 물어볼 것.
+
 ## 코딩 컨벤션
 
 ### 파일 네이밍
