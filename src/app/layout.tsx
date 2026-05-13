@@ -4,6 +4,7 @@ import './globals.css';
 import { cn } from '@/shared/lib/utils';
 import { getCurrentUser } from '@/features/auth/auth.api';
 import { AuthProvider } from '@/features/auth/ui/AuthProvider';
+import { QueryProvider } from './query-provider';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-sans',
@@ -22,9 +23,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="en" className={cn('font-sans', plusJakartaSans.variable)}>
       <body className="antialiased">
-        <AuthProvider initialUser={user}>
-          <div className="flex min-h-screen flex-col">{children}</div>
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider initialUser={user}>
+            <div className="flex min-h-screen flex-col">{children}</div>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

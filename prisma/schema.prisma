@@ -29,8 +29,9 @@ model Design {
   description  String                                        /// 도안 설명
   category     DesignCategory                                /// 도안 카테고리
   price        Int            @default(0)                    /// 가격 (MVP: 0 고정, 이후 유료 확장 대비)
-  instructions String[]                                      /// 조립 설명서 PDF URL 배열 (여러 파일 가능)
-  images       String[]                                      /// 이미지 URL 배열 (첫 번째가 대표 썸네일)
+  instructions String[]                                      /// 조립 설명서 PDF URL 배열 (최대 2개)
+  thumbnail    String                                        /// 대표 썸네일 이미지 URL
+  images       String[]                                      /// 갤러리 이미지 URL 배열 (최대 6개)
   authorId     String                                        /// 도안을 등록한 유저의 ID
   author       User           @relation(fields: [authorId], references: [id])
   createdAt    DateTime       @default(now())                /// 도안 등록 시각

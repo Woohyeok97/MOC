@@ -8,7 +8,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'castles',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-castle/600/800'],
+    thumbnail: 'https://picsum.photos/seed/lego-castle/600/800',
+    images: [],
     authorId: 'BrickMaster',
     createdAt: new Date('2024-03-15'),
     updatedAt: new Date('2024-03-15')
@@ -20,7 +21,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'vehicles',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-mech/600/400'],
+    thumbnail: 'https://picsum.photos/seed/lego-mech/600/400',
+    images: [],
     authorId: 'NeoBricks',
     createdAt: new Date('2024-03-20'),
     updatedAt: new Date('2024-03-20')
@@ -32,7 +34,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'architecture',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-modular/600/900'],
+    thumbnail: 'https://picsum.photos/seed/lego-modular/600/900',
+    images: [],
     authorId: 'CityBuilder',
     createdAt: new Date('2024-02-28'),
     updatedAt: new Date('2024-02-28')
@@ -44,7 +47,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'vehicles',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-space/600/600'],
+    thumbnail: 'https://picsum.photos/seed/lego-space/600/600',
+    images: [],
     authorId: 'StarDesigner',
     createdAt: new Date('2024-03-10'),
     updatedAt: new Date('2024-03-10')
@@ -56,7 +60,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'vehicles',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-technic/600/700'],
+    thumbnail: 'https://picsum.photos/seed/lego-technic/600/700',
+    images: [],
     authorId: 'GearHead',
     createdAt: new Date('2024-03-05'),
     updatedAt: new Date('2024-03-05')
@@ -68,7 +73,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'vehicles',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-sub/600/500'],
+    thumbnail: 'https://picsum.photos/seed/lego-sub/600/500',
+    images: [],
     authorId: 'OceanBrick',
     createdAt: new Date('2024-01-20'),
     updatedAt: new Date('2024-01-20')
@@ -80,7 +86,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'castles',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-dragon/600/850'],
+    thumbnail: 'https://picsum.photos/seed/lego-dragon/600/850',
+    images: [],
     authorId: 'FantasyBuild',
     createdAt: new Date('2024-03-22'),
     updatedAt: new Date('2024-03-22')
@@ -92,7 +99,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'robots',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-robot/600/750'],
+    thumbnail: 'https://picsum.photos/seed/lego-robot/600/750',
+    images: [],
     authorId: 'MechLab',
     createdAt: new Date('2024-03-18'),
     updatedAt: new Date('2024-03-18')
@@ -104,7 +112,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'architecture',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-train/600/950'],
+    thumbnail: 'https://picsum.photos/seed/lego-train/600/950',
+    images: [],
     authorId: 'TrainFan',
     createdAt: new Date('2024-02-15'),
     updatedAt: new Date('2024-02-15')
@@ -116,7 +125,8 @@ export const MOCK_DESIGNS: Design[] = [
     category: 'vehicles',
     price: 0,
     instructions: [],
-    images: ['https://picsum.photos/seed/lego-car/600/650'],
+    thumbnail: 'https://picsum.photos/seed/lego-car/600/650',
+    images: [],
     authorId: 'Speedy',
     createdAt: new Date('2024-03-12'),
     updatedAt: new Date('2024-03-12')

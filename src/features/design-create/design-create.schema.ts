@@ -1,68 +1,44 @@
+// 작품 등록 폼 Zod 스키마
 import { z } from 'zod';
 
 export const DESIGN_CATEGORIES = ['architecture', 'castles', 'vehicles', 'robots', 'others'] as const;
 
-const MAX_IMAGE_COUNT = 10;
-const MAX_IMAGE_SIZE_MB = 10;
-const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
-const IMAGE_MIME_PREFIX = 'image/';
-
-const MAX_PDF_COUNT = 10;
-const MAX_PDF_SIZE_MB = 50;
-const MAX_PDF_SIZE_BYTES = MAX_PDF_SIZE_MB * 1024 * 1024;
-const PDF_MIME_TYPE = 'application/pdf';
-
-function toFileArray(value: unknown): File[] {
-  if (value instanceof FileList) return Array.from(value);
-  if (Array.isArray(value)) return value.filter(file => file instanceof File);
-  return [];
-}
-
+// 디자인 등록 폼 스키마
 export const DesignCreateSchema = z.object({
-  title: z.string().trim().min(1, '제목을 입력해주세요.').max(120, '제목은 120자 이하로 입력해주세요.'),
-  description: z.string().trim().min(1, '설명을 입력해주세요.').max(2000, '설명은 2000자 이하로 입력해주세요.'),
-  category: z.enum(DESIGN_CATEGORIES, {
-    error: () => '올바른 카테고리를 선택해주세요.'
-  }),
+  title: z.string().trim().min(1, 'Title is required.').max(120, 'Max 120 characters.'),
+  description: z.string().trim().min(1, 'Description is required.').max(2000, 'Max 2000 characters.'),
+
+  // register('price', { setValueAs }) 와 짝 — 빈 입력은 0으로 변환 후 검증
+  price: z.number().min(0, 'Price must be 0 or more.'),
+
+  // useController
+  category: z.enum(DESIGN_CATEGORIES, { error: () => 'Please select a category.' }),
+
+  // useController — 필수 단건 File
   thumbnail: z
-    .custom<File[] | FileList>(value => value instanceof FileList || Array.isArray(value), {
-      message: '대표 썸네일 이미지를 선택해주세요.'
-    })
-    .transform(toFileArray)
-    .refine(files => files.length > 0, '대표 썸네일 이미지를 선택해주세요.')
-    .refine(files => files.length === 1, '대표 썸네일은 1장만 업로드할 수 있습니다.')
-    .refine(
-      files => files.every(file => file.type.startsWith(IMAGE_MIME_PREFIX)),
-      '대표 썸네일은 이미지 파일만 업로드할 수 있습니다.'
-    )
-    .refine(
-      files => files.every(file => file.size <= MAX_IMAGE_SIZE_BYTES),
-      `대표 썸네일은 ${MAX_IMAGE_SIZE_MB}MB 이하여야 합니다.`
-    ),
+    .custom<File>(file => file instanceof File, 'Thumbnail is required.')
+    .refine(file => file.type.startsWith('image/'), 'Only image files are allowed.')
+    .refine(file => file.size <= 10 * 1024 * 1024, 'Max file size is 10MB.'),
+
+  // useController — 선택 File 배열 (최대 6)
   images: z
-    .preprocess(value => (value == null ? [] : value), z.custom<File[] | FileList>(value => value instanceof FileList || Array.isArray(value)))
-    .transform(toFileArray)
-    .refine(files => files.length <= MAX_IMAGE_COUNT, `이미지는 최대 ${MAX_IMAGE_COUNT}장까지 업로드할 수 있습니다.`)
-    .refine(
-      files => files.every(file => file.type.startsWith(IMAGE_MIME_PREFIX)),
-      '이미지 파일만 업로드할 수 있습니다.'
+    .array(
+      z
+        .custom<File>(file => file instanceof File)
+        .refine(file => file.type.startsWith('image/'), 'Only image files are allowed.')
+        .refine(file => file.size <= 10 * 1024 * 1024, 'Max file size is 10MB.')
     )
-    .refine(
-      files => files.every(file => file.size <= MAX_IMAGE_SIZE_BYTES),
-      `이미지 파일은 각각 ${MAX_IMAGE_SIZE_MB}MB 이하여야 합니다.`
-    ),
+    .max(6, 'Up to 6 gallery images allowed.'),
+
+  // useController — 선택 File 배열 (최대 2)
   instructions: z
-    .custom<File[] | FileList>(value => value instanceof FileList || Array.isArray(value), {
-      message: 'PDF 파일을 선택해주세요.'
-    })
-    .transform(toFileArray)
-    .refine(files => files.length > 0, 'PDF를 1개 이상 업로드해주세요.')
-    .refine(files => files.length <= MAX_PDF_COUNT, `PDF는 최대 ${MAX_PDF_COUNT}개까지 업로드할 수 있습니다.`)
-    .refine(files => files.every(file => file.type === PDF_MIME_TYPE), 'PDF 파일만 업로드할 수 있습니다.')
-    .refine(
-      files => files.every(file => file.size <= MAX_PDF_SIZE_BYTES),
-      `PDF 파일은 각각 ${MAX_PDF_SIZE_MB}MB 이하여야 합니다.`
+    .array(
+      z
+        .custom<File>(file => file instanceof File)
+        .refine(file => file.type === 'application/pdf', 'Only PDF files are allowed.')
     )
+    .max(2, 'Up to 2 PDF files allowed.')
 });
 
+// 디자인 등록 폼 타입
 export type DesignCreateFormType = z.infer<typeof DesignCreateSchema>;

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { Design } from '@/entities/design/design.type';
 
 export function DesignCard({ design }: { design: Design }) {
-  const thumbnailUrl = design.images[0] ?? ''; // 썸네일
+  const thumbnailUrl = design.thumbnail;
 
   return (
     <Link
