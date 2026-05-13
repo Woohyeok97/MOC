@@ -1,20 +1,15 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Noto_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/shared/lib/utils';
 import { getCurrentUser } from '@/features/auth/auth.api';
 import { AuthProvider } from '@/features/auth/ui/AuthProvider';
+import { QueryProvider } from './query-provider';
 
-const notoSans = Noto_Sans({ variable: '--font-sans' });
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin']
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: '--font-sans',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700']
 });
 
 export const metadata: Metadata = {
@@ -26,11 +21,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const user = await getCurrentUser();
 
   return (
-    <html lang="en" className={cn('font-sans', notoSans.variable)}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AuthProvider initialUser={user}>
-          <div className="flex min-h-screen flex-col">{children}</div>
-        </AuthProvider>
+    <html lang="en" className={cn('font-sans', plusJakartaSans.variable)}>
+      <body className="antialiased">
+        <QueryProvider>
+          <AuthProvider initialUser={user}>
+            <div className="flex min-h-screen flex-col">{children}</div>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

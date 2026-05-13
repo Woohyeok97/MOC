@@ -1,17 +1,12 @@
 // components
-import { Footer } from '@/widgets/Footer';
 import { Header } from '@/widgets/Header';
-import { Sidebar } from '@/widgets/Sidebar';
 
+// (main) 그룹 레이아웃 — Header + 콘텐츠 영역 (Sidebar는 홈 페이지 전용)
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <>
-      <Sidebar />
-      <div className="bg-background mb-16 flex min-h-screen flex-col md:mb-0 md:ml-20">
-        <Header />
-        <main className="flex min-h-0 flex-1">{children}</main>
-        <Footer />
-      </div>
-    </>
+    <div className="flex h-screen flex-col">
+      <Header />
+      <main className="flex-1 overflow-y-auto">{children}</main>
+    </div>
   );
 }
