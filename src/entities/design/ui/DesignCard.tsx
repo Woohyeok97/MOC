@@ -1,9 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { createClient } from '@/shared/api/supabase/server';
+import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 import type { Design } from '@/entities/design/design.type';
 
-export function DesignCard({ design }: { design: Design }) {
-  const thumbnailUrl = design.thumbnail;
+export async function DesignCard({ design }: { design: Design }) {
+  const supabase = await createClient();
+  const thumbnailUrl = design.thumbnail ? getPublicImageUrl(supabase, design.thumbnail) : null;
 
   return (
     <Link

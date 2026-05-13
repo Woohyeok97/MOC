@@ -3,7 +3,12 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { createClient } from '@/shared/api/supabase/client';
 import { useAuthStore } from '@/features/auth/auth.store';
-import { uploadThumbnail, uploadGalleryImages, uploadInstructions } from '@/shared/api/supabase/storage';
+import {
+  uploadThumbnail,
+  uploadGalleryImages,
+  uploadInstructions,
+  rollbackUploads
+} from '@/shared/api/supabase/storage';
 import { createDesign } from './design-create.actions';
 import type { DesignCreateFormType } from './design-create.schema';
 
@@ -29,23 +34,48 @@ export function useCreateDesignMutation(options?: CreateDesignMutationOptions) {
       const uploadId = crypto.randomUUID();
       const basePath = `${user.id}/${uploadId}`;
 
-      // 파일 병렬 업로드
-      const [thumbnailUrl, imageUrls, instructionPaths] = await Promise.all([
+      // 파일 병렬 업로드 — 부분 실패도 처리하기 위해 allSettled 사용(전부 완료될 때까지 기다리고, 각각의 성공/실패 결과를 배열로 반환)
+      const [thumbnailResult, galleryResult, instructionResult] = await Promise.allSettled([
         uploadThumbnail(supabase, data.thumbnail, basePath),
         uploadGalleryImages(supabase, data.images, basePath),
         uploadInstructions(supabase, data.instructions, basePath)
       ]);
 
-      // 디자인 생성 서버 액션 실행
-      return createDesign({
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        price: data.price,
-        thumbnailUrl,
-        imageUrls,
-        instructionPaths
-      });
+      // 성공한 것들의 path 수집 (부분 실패 시 롤백 대상)
+      const uploadedInstructionPaths = instructionResult.status === 'fulfilled' ? instructionResult.value : [];
+      const uploadedImagePaths: string[] = [];
+      if (thumbnailResult.status === 'fulfilled') uploadedImagePaths.push(thumbnailResult.value.path);
+      if (galleryResult.status === 'fulfilled') uploadedImagePaths.push(...galleryResult.value.map(img => img.path));
+
+      // 하나라도 실패하면 성공한 파일 롤백 후 에러 throw
+      const failed = [thumbnailResult, galleryResult, instructionResult].find(result => result.status === 'rejected');
+      if (failed) {
+        await rollbackUploads(supabase, uploadedImagePaths, uploadedInstructionPaths);
+        throw (failed as PromiseRejectedResult).reason;
+      }
+
+      // 이 시점에서 모두 fulfilled -> 모두 업로드 성공 확정
+      const thumbnail = (thumbnailResult as PromiseFulfilledResult<{ url: string; path: string }>).value;
+      const galleryImages = (galleryResult as PromiseFulfilledResult<{ url: string; path: string }[]>).value;
+      const instructionPaths = (instructionResult as PromiseFulfilledResult<string[]>).value;
+
+      const allImagePaths = [thumbnail.path, ...galleryImages.map(img => img.path)];
+
+      // 디자인 생성 서버 액션 실행 — 실패 시 업로드된 파일 롤백
+      try {
+        return await createDesign({
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          price: data.price,
+          thumbnailPath: thumbnail.path,
+          imagePaths: galleryImages.map(img => img.path),
+          instructionPaths
+        });
+      } catch (error) {
+        await rollbackUploads(supabase, allImagePaths, instructionPaths);
+        throw error;
+      }
     },
     ...options
   });
