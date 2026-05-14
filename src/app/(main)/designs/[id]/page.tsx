@@ -74,7 +74,15 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                 {buttonState === 'no-instructions' ? '설명서 없음' : '로그인 필요'}
               </Button>
             )}
-            {buttonState === 'get' && <InstructionDownloadButton designId={design.id} />}
+            {buttonState === 'get' &&
+              design.instructions.map((_, i) => (
+                <InstructionDownloadButton
+                  key={i}
+                  designId={design.id}
+                  index={i}
+                  total={design.instructions.length}
+                />
+              ))}
             {buttonState === 'buy' && <PurchaseButton designId={design.id} />}
           </div>
 

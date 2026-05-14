@@ -1,10 +1,10 @@
 'use client';
 
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
-import { purchaseDesign, getInstructionUrls } from './purchase.actions';
+import { purchaseDesign, getInstructionUrl } from './purchase.actions';
 
 type PurchaseMutationOptions = UseMutationOptions<void, Error, string>;
-type GetInstructionsMutationOptions = UseMutationOptions<string[], Error, string>;
+type GetInstructionMutationOptions = UseMutationOptions<string, Error, { designId: string; index: number }>;
 
 export function usePurchaseDesignMutation(options?: PurchaseMutationOptions) {
   return useMutation<void, Error, string>({
@@ -13,9 +13,9 @@ export function usePurchaseDesignMutation(options?: PurchaseMutationOptions) {
   });
 }
 
-export function useGetInstructionsMutation(options?: GetInstructionsMutationOptions) {
-  return useMutation<string[], Error, string>({
-    mutationFn: (designId) => getInstructionUrls(designId),
+export function useGetInstructionMutation(options?: GetInstructionMutationOptions) {
+  return useMutation<string, Error, { designId: string; index: number }>({
+    mutationFn: ({ designId, index }) => getInstructionUrl(designId, index),
     ...options
   });
 }

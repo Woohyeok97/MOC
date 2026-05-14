@@ -1,18 +1,26 @@
 'use client';
 
 // mutations
-import { useGetInstructionsMutation } from '../purchase.mutate';
+import { useGetInstructionMutation } from '../purchase.mutate';
 // components
 import { Button } from '@/shared/ui/button';
 
-export function InstructionDownloadButton({ designId }: { designId: string }) {
-  const { mutate, isPending } = useGetInstructionsMutation({
-    onSuccess: (urls) => urls.forEach((url) => window.open(url, '_blank'))
+interface Props {
+  designId: string;
+  index: number;
+  total: number;
+}
+
+export function InstructionDownloadButton({ designId, index, total }: Props) {
+  const { mutate, isPending } = useGetInstructionMutation({
+    onSuccess: (url) => window.open(url, '_blank'),
   });
 
+  const label = total > 1 ? `Instructions ${index + 1}` : 'Get Instructions';
+
   return (
-    <Button size="lg" className="w-full" onClick={() => mutate(designId)} disabled={isPending}>
-      {isPending ? '준비 중...' : 'Get Instructions'}
+    <Button size="lg" className="w-full" onClick={() => mutate({ designId, index })} disabled={isPending}>
+      {isPending ? '준비 중...' : label}
     </Button>
   );
 }
