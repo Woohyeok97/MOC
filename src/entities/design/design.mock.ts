@@ -9,7 +9,11 @@ export const MOCK_DESIGNS: Design[] = [
     price: 0,
     instructions: [],
     thumbnail: 'https://picsum.photos/seed/lego-castle/600/800',
-    images: [],
+    images: [
+      'https://picsum.photos/seed/lego-castle-1/1200/800',
+      'https://picsum.photos/seed/lego-castle-2/1200/800',
+      'https://picsum.photos/seed/lego-castle-3/1200/800',
+    ],
     authorId: 'BrickMaster',
     createdAt: new Date('2024-03-15'),
     updatedAt: new Date('2024-03-15')
