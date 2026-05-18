@@ -1,6 +1,7 @@
 // 서버(Server Component, Route Handler, Server Action)용 Supabase 클라이언트 생성 유틸
 // 서버는 document.cookie에 접근 불가 → Next.js cookies() API를 대신 사용
 import { createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
 export async function createClient() {
@@ -25,4 +26,9 @@ export async function createClient() {
       }
     }
   });
+}
+
+// RLS(INSERT, SELECT, UPDATE, DELETE) 우회용 서비스 롤 클라이언트 — 서버에서만 사용할 것
+export function createServiceRoleClient() {
+  return createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 }

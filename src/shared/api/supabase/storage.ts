@@ -55,7 +55,18 @@ export async function uploadInstructions(supabase: SupabaseClient, files: File[]
   );
 }
 
-// Images 버킷 path → public URL 변환 함수 (렌더링용, 네트워크 요청 없음)
+// Instructions 버킷 시그니처 Url 반환 함수 (TTL 60초, private 버킷)
+export async function getSignedInstructionUrls(supabase: SupabaseClient, paths: string[]): Promise<string[]> {
+  const results = await Promise.all(
+    paths.map(path => supabase.storage.from(INSTRUCTIONS_BUCKET).createSignedUrl(path, 60))
+  );
+  return results.map(r => {
+    if (r.error || !r.data) throw new Error(`서명 URL 생성 실패: ${r.error?.message}`);
+    return r.data.signedUrl;
+  });
+}
+
+// Images 버킷 퍼블릭 이미지 Url 반환 함수 (렌더링용, 네트워크 요청 없음)
 export function getPublicImageUrl(supabase: SupabaseClient, path: string): string {
   return supabase.storage.from(IMAGES_BUCKET).getPublicUrl(path).data.publicUrl;
 }
