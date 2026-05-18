@@ -17,7 +17,8 @@ type ViewerState =
   | 'unbought' // 로그인 + 유료 + 미구매 + 설명서 있음
   | 'bought' // 로그인 + 유료 + 구매함 + 설명서 있음
   | 'free' // 로그인 + 무료 + 설명서 있음
-  | 'no_instructions'; // 무료 + 설명서 없음
+  | 'no_instructions' // 무료 + 설명서 없음
+  | 'guest_no_instructions'; // 비로그인 + 설명서 없음
 
 export default async function DesignDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: designId } = await params;

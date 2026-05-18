@@ -25,9 +25,8 @@ export async function GET(request: NextRequest) {
   if (exchangeError) return NextResponse.redirect(`${origin}/signin`);
 
   // 2. 쿠키에 저장된 access_token(JWT)에서 유저 정보 추출
-  const {
-    data: { claims }
-  } = await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
 
   if (claims) {
     const userId = claims.sub;

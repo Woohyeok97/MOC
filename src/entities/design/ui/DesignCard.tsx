@@ -10,7 +10,7 @@ export async function DesignCard({ design }: { design: Design }) {
 
   return (
     <Link
-      href="#"
+      href={`/designs/${design.id}`}
       className="group mb-[10px] block cursor-pointer break-inside-avoid transition-transform duration-170 ease-out hover:-translate-y-0.5">
       <div className="relative overflow-hidden rounded-[14px] bg-[#efefef]">
         {thumbnailUrl && (
