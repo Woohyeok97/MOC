@@ -95,3 +95,52 @@
     @apply font-sans;
   }
 }
+
+/* 디자인 디테일 페이지 — Layout A 그리드 */
+.detail-layout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr);
+  grid-template-areas: 'image info' 'desc info';
+  gap: 36px;
+  align-items: start;
+}
+.detail-ga-image {
+  grid-area: image;
+  min-width: 0;
+}
+.detail-ga-info {
+  grid-area: info;
+  min-width: 0;
+}
+.detail-ga-desc {
+  grid-area: desc;
+  min-width: 0;
+}
+.detail-sticky {
+  position: sticky;
+  /* align-self: start; */
+}
+
+/* .detail-sticky   { position: sticky; top: 64px; align-self: start; } */
+
+@media (max-width: 960px) {
+  .detail-layout-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: 'image' 'info' 'desc' !important;
+    gap: 20px !important;
+  }
+  .detail-sticky {
+    position: static !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .detail-page-pad {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+  .carousel-nav-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}

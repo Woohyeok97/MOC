@@ -1,26 +1,47 @@
 'use client';
 
-// mutations
-import { useGetInstructionMutation } from '../purchase.mutate';
-// components
-import { Button } from '@/shared/ui/button';
+import { Download, LockKeyhole } from 'lucide-react';
+import { useGetInstructionMutation } from '@/features/design-purchase/purchase.mutate';
 
-interface Props {
+interface InstructionDownloadButtonProps {
   designId: string;
   index: number;
-  total: number;
+  label: string;
+  isEnabled: boolean;
 }
 
-export function InstructionDownloadButton({ designId, index, total }: Props) {
+export function InstructionDownloadButton({ designId, index, label, isEnabled }: InstructionDownloadButtonProps) {
   const { mutate, isPending } = useGetInstructionMutation({
-    onSuccess: (url) => window.open(url, '_blank'),
+    onSuccess: url => {
+      window.open(url, '_blank');
+    }
   });
 
-  const label = total > 1 ? `Instructions ${index + 1}` : 'Get Instructions';
+  // Instruction 다운로드 핸들러
+  const handleDownloadInstruction = () => {
+    if (!isEnabled) return;
+    mutate({ designId, index });
+  };
 
   return (
-    <Button size="lg" className="w-full" onClick={() => mutate({ designId, index })} disabled={isPending}>
-      {isPending ? '준비 중...' : label}
-    </Button>
+    <div className="bg-muted border-input flex items-center justify-between rounded-xl border px-3 py-2">
+      <div className="flex items-center gap-3">
+        {/* <File /> */}
+        <div
+          className={`${isEnabled ? 'bg-primary' : 'bg-[#91918c]'} flex h-8 w-8 items-center justify-center rounded-lg`}>
+          <span className="text-[8px] font-extrabold text-white">PDF</span>
+        </div>
+        <div>
+          <p className="text-[12.5px] font-semibold">{label}</p>
+          <p className="text-muted-foreground text-[11px]">12.3 MB</p>
+        </div>
+      </div>
+      <button
+        onClick={handleDownloadInstruction}
+        disabled={isPending || !isEnabled}
+        className="bg-secondary flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg">
+        {isEnabled ? <Download size={16} /> : <LockKeyhole size={16} />}
+      </button>
+    </div>
   );
 }

@@ -1,72 +1,101 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 // components
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-  type CarouselApi
-} from '@/shared/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/shared/ui/carousel';
 // utils
 import { cn } from '@/shared/lib/utils';
 
-interface Props {
+interface DesignImageCarouselProps {
   images: string[];
-  title: string;
 }
 
-export function DesignImageCarousel({ images, title }: Props) {
-  // CarouselApi: Embla 인스턴스. setApi prop으로 Carousel이 마운트 후 주입해줌
+export function DesignImageCarousel({ images }: DesignImageCarouselProps) {
   const [api, setApi] = useState<CarouselApi>();
-  const [currentSlide, setCurrentSlide] = useState(0); // 현재 슬라이드 인덱스 (dots 강조에 사용)
-  const count = images.length; // 전체 슬라이드 수 — props에서 직접 파생
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const hasMultiple = images.length > 1;
+
+  const onSelect = useCallback((api: CarouselApi) => {
+    if (!api) return;
+    setCurrentIndex(api.selectedScrollSnap());
+  }, []);
 
   useEffect(() => {
     if (!api) return;
-    // 슬라이드 이동 시마다 현재 인덱스 갱신 (이벤트 콜백으로만 setState)
-    const onSelect = () => setCurrentSlide(api.selectedScrollSnap());
     api.on('select', onSelect);
     return () => {
       api.off('select', onSelect);
     };
-  }, [api]);
+  }, [api, onSelect]);
 
   return (
-    <Carousel setApi={setApi} className="h-full w-full" opts={{ loop: true }}>
-      <CarouselContent className="ml-0 h-full">
-        {images.map((src, i) => (
-          <CarouselItem key={i} className="relative h-full pl-0">
-            <Image src={src} alt={`${title} ${i + 1}`} fill className="object-cover" priority={i === 0} />
-          </CarouselItem>
-        ))}
-      </CarouselContent>
+    <div className="flex flex-col gap-3">
+      {/* 메인 캐러셀 */}
+      <Carousel setApi={setApi} opts={{ loop: true }}>
+        <div className="relative aspect-4/3 overflow-hidden rounded-[20px] bg-black">
+          <CarouselContent className="ml-0 h-full">
+            {images.map((src, i) => (
+              <CarouselItem key={i} className="h-full pl-0">
+                <div className="relative h-full w-full">
+                  {/* 블러 배경 (세로 이미지 양옆 빈 공간 채움) */}
+                  {}
+                  {/* <img
+                    src={src}
+                    alt=""
+                    aria-hidden
+                    draggable="false"
+                    className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
+                  /> */}
+                  {/* 메인 이미지 */}
+                  <Image
+                    src={src}
+                    alt={`이미지 ${i + 1}`}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
 
-      {/* 화살표 — 기본 위치(-left-12/-right-12)를 left-4/right-4로 덮어써서 이미지 위에 오버레이. 단일 이미지면 숨김 */}
-      {count > 1 && (
-        <>
-          <CarouselPrevious className="left-4 border-0 bg-black/40 text-white hover:bg-black/60 hover:text-white" />
-          <CarouselNext className="right-4 border-0 bg-black/40 text-white hover:bg-black/60 hover:text-white" />
-        </>
-      )}
+          {/* 닷 인디케이터 */}
+          {hasMultiple && (
+            <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+              {images.map((_, i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    'h-1.5 w-1.5 rounded-full transition-colors',
+                    i === currentIndex ? 'bg-white' : 'bg-white/50'
+                  )}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </Carousel>
 
-      {/* 점 인디케이터 — 슬라이드가 2장 이상일 때만 표시 */}
-      {count > 1 && (
-        <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
-          {Array.from({ length: count }).map((_, i) => (
-            <span
+      {/* 썸네일 스트립 */}
+      {hasMultiple && (
+        <div className="flex gap-2">
+          {images.map((src, i) => (
+            <button
               key={i}
+              type="button"
+              onClick={() => api?.scrollTo(i)}
               className={cn(
-                'size-1.5 rounded-full transition-opacity',
-                i === currentSlide ? 'bg-white' : 'bg-white/50'
-              )}
-            />
+                'h-20 w-20 shrink-0 overflow-hidden rounded-lg transition-all',
+                i === currentIndex ? 'ring-2 ring-blue-500' : 'opacity-70 ring-1 ring-transparent'
+              )}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt={`썸네일 ${i + 1}`} className="h-full w-full object-cover" />
+            </button>
           ))}
         </div>
       )}
-    </Carousel>
+    </div>
   );
 }
