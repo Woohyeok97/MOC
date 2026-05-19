@@ -1,64 +1,74 @@
+// 유저 엔티티 데이터 페칭
+
 import { cache } from 'react';
 import { prisma } from '@/shared/api/prisma';
+import type { UserWithCount, PurchaseItemType } from '@/entities/user/user.type';
 
-// 유저 프로필 + 디자인/구매 수 조회
-export const getUserProfile = cache(async (userId: string) => {
-  return prisma.user.findUnique({
+// 유저 프로필 + 디자인 수 조회
+export const getUserProfile = cache(async (userId: string): Promise<UserWithCount | null> => {
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
       name: true,
-      _count: { select: { designs: true, purchases: true } }
-    }
+      _count: { select: { designs: true } },
+    },
   });
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    name: user.name,
+    designCount: user._count.designs,
+  };
 });
 
-// TODO: DB 연결 후 실제 구매 데이터로 교체
-const MOCK_PURCHASES = [
-  {
-    id: 'mock-purchase-1',
-    purchasedAt: new Date('2024-03-18'),
-    design: {
-      id: '1',
-      title: '중세 성채 - 블랙 팔콘 요새',
-      thumbnail: 'https://picsum.photos/seed/lego-castle/600/800',
-      price: 9900,
-      author: { name: 'BrickMaster' }
-    }
-  },
-  {
-    id: 'mock-purchase-2',
-    purchasedAt: new Date('2024-03-10'),
-    design: {
-      id: '4',
-      title: 'UCS급 X-윙 스타파이터',
-      thumbnail: 'https://picsum.photos/seed/lego-space/600/600',
-      price: 14900,
-      author: { name: 'StarDesigner' }
-    }
-  },
-  {
-    id: 'mock-purchase-3',
-    purchasedAt: new Date('2024-02-28'),
-    design: {
-      id: '3',
-      title: '모듈러 서점 & 카페',
-      thumbnail: 'https://picsum.photos/seed/lego-modular/600/900',
-      price: 7900,
-      author: { name: 'CityBuilder' }
-    }
-  }
-];
-
-// 유저의 구매 내역 조회 (본인만 접근 가능, 호출부에서 인가 처리)
-export const getUserPurchaseList = cache(async (_userId: string) => {
-  // TODO: DB 연결 후 prisma.purchase.findMany로 교체
-  // const purchases = await prisma.purchase.findMany({
-  //   where: { userId: _userId },
-  //   include: { design: { include: { author: { select: { name: true } } } } },
-  //   orderBy: { purchasedAt: 'desc' }
-  // });
-  // const supabase = await createClient();
-  // return purchases.map(p => ({ ... }));
-  return MOCK_PURCHASES;
+// TODO: DB 연결 후 prisma.purchase.findMany로 교체
+export const getUserPurchaseList = cache(async (_userId: string): Promise<PurchaseItemType[]> => {
+  return [
+    {
+      id: 'p1',
+      amount: 38000,
+      purchasedAt: new Date('2025-12-15'),
+      design: {
+        id: '2',
+        title: '사이버펑크 레이서 V2',
+        thumbnail: 'https://picsum.photos/seed/lego-mech/600/400',
+        author: { name: 'NeoBricks', avatarUrl: null },
+      },
+    },
+    {
+      id: 'p2',
+      amount: 72000,
+      purchasedAt: new Date('2025-11-28'),
+      design: {
+        id: '4',
+        title: 'UCS급 X-윙 스타파이터',
+        thumbnail: 'https://picsum.photos/seed/lego-space/600/600',
+        author: { name: 'StarDesigner', avatarUrl: null },
+      },
+    },
+    {
+      id: 'p3',
+      amount: 25000,
+      purchasedAt: new Date('2025-11-10'),
+      design: {
+        id: '6',
+        title: '심해 탐사 잠수함',
+        thumbnail: 'https://picsum.photos/seed/lego-sub/600/500',
+        author: { name: 'OceanBrick', avatarUrl: null },
+      },
+    },
+    {
+      id: 'p4',
+      amount: 55000,
+      purchasedAt: new Date('2025-10-22'),
+      design: {
+        id: '1',
+        title: '중세 성채 - 블랙 팔콘 요새',
+        thumbnail: 'https://picsum.photos/seed/lego-castle/600/800',
+        author: { name: 'BrickMaster', avatarUrl: null },
+      },
+    },
+  ];
 });

@@ -31,14 +31,14 @@ export const getDesignById = cache(async (id: string): Promise<DesignWithAuthor 
   };
 });
 
-export const getUserDesignList = cache(async (userId: string) => {
-  return prisma.design.findMany({
-    where: { authorId: userId },
-    orderBy: { createdAt: 'desc' }
-  });
-});
-
 // TODO: DB 연결 후 prisma.purchase.findUnique({ where: { userId_designId: { userId, designId } } })로 교체
 export async function getIsPurchased(_userId: string, _designId: string): Promise<boolean> {
   return false;
 }
+
+export const getUserDesignList = cache(async (userId: string): Promise<Design[]> => {
+  return prisma.design.findMany({
+    where: { authorId: userId },
+    orderBy: { createdAt: 'desc' },
+  });
+});

@@ -1,164 +1,188 @@
+// next
 import { notFound } from 'next/navigation';
-import { LayoutGrid, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
-// components
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
-import { DesignCard } from '@/entities/design/ui/DesignCard';
-// api
+// icons
+import { LayoutGrid, ShoppingBag } from 'lucide-react';
+// features
 import { getCurrentUser } from '@/features/auth/auth.api';
+// entities
 import { getUserProfile, getUserPurchaseList } from '@/entities/user/user.api';
 import { getUserDesignList } from '@/entities/design/design.api';
+import { DesignCard } from '@/entities/design/ui/DesignCard';
+// shared
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
+// types
+import type { PurchaseItemType } from '@/entities/user/user.type';
 
-type Props = { params: Promise<{ userId: string }> };
+// types
+type Params = Promise<{ userId: string }>;
 
-export default async function ProfilePage({ params }: Props) {
+export default async function ProfilePage({ params }: { params: Params }) {
   const { userId } = await params;
 
-  // 로그인, 유저 프로필, 유저 디자인 목록
-  const [currentUser, profile, designs] = await Promise.all([
-    getCurrentUser(),
+  // 1. 현재 로그인 유저 확인 (cache()로 중복 호출 방지)
+  const currentUser = await getCurrentUser();
+  const isOwner = currentUser?.id === userId;
+
+  // 2. 프로필 + 디자인 목록 + (본인이면) 구매 내역 병렬 패치
+  const [profile, designs, purchases] = await Promise.all([
     getUserProfile(userId),
-    getUserDesignList(userId)
+    getUserDesignList(userId),
+    isOwner ? getUserPurchaseList(userId) : Promise.resolve(null)
   ]);
 
-  // 프로필이 없는 경우
   if (!profile) notFound();
 
-  const isOwner = currentUser?.id === userId; // 본인 프로필 여부
-  const purchaseList = isOwner ? await getUserPurchaseList(userId) : null; // 구매 목록
+  // 3. 아바타 — 본인이고 avatarUrl 있으면 사용, 없으면 이니셜
+  const avatarUrl = isOwner ? (currentUser?.avatarUrl ?? null) : null;
+  const initial = (profile.name ?? 'U')[0].toUpperCase();
 
-  // 디자인 그리드 (본인/타인 공통)
-  const designsGrid = (
-    <div className="columns-[200px] gap-2.5 p-4">
-      {designs.map(design => (
-        <DesignCard key={design.id} design={design} />
-      ))}
-      {designs.length === 0 && <p className="py-20 text-center text-[14px] text-[#91918c]">등록한 디자인이 없어요</p>}
-    </div>
-  );
+  // 본인 여부
+  const isOwnProfile = isOwner && purchases !== null;
 
   return (
     <div>
       {/* 프로필 헤더 */}
-      <div className="flex flex-col items-center gap-3 px-4 py-10">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#e0e0d9]">
-          <span className="text-2xl font-semibold text-[#62625b]">{profile.name?.[0] ?? '?'}</span>
+      <div className="flex flex-col items-center border-b px-4 py-12 md:py-16">
+        {/* 아바타 */}
+        <div className="ring-primary bg-secondary relative size-20 shrink-0 overflow-hidden rounded-full ring-[3px] md:size-24">
+          {avatarUrl ? (
+            <Image src={avatarUrl} alt={profile.name ?? '프로필'} fill className="object-cover" sizes="96px" />
+          ) : (
+            <span className="text-muted-foreground flex h-full w-full items-center justify-center text-2xl font-bold">
+              {initial}
+            </span>
+          )}
         </div>
-        <h1 className="text-xl font-bold text-[#211922]">{profile.name}</h1>
-        <p className="mb-6 text-sm text-[#62625b]">
-          레고 디자인을 통해 세상의 이야기를 만들어갑니다. 건축과 판타지 테마를 주로 작업하고 있어요.
+
+        {/* 유저명 */}
+        <h1 className="mt-4 text-xl font-bold md:text-2xl">{profile.name ?? '알 수 없는 유저'}</h1>
+
+        {/* 바이오 (임시 하드코딩) */}
+        <p className="text-muted-foreground mt-2 max-w-sm text-center text-sm leading-relaxed">
+          레고 디자인을 통해 세상의 이야기를 만들어갑니다.
+          <br />
+          건축과 판타지 테마를 주로 작업하고 있어요.
         </p>
       </div>
 
-      {/* 컨텐츠 */}
-      {isOwner && purchaseList ? (
+      {/* 콘텐츠 영역 */}
+      {isOwnProfile ? (
+        // 본인 프로필 — 탭 UI
         <Tabs defaultValue="designs">
-          <TabsList className="gap-6 px-6">
-            <TabsTrigger value="designs" className="text-[15px]">
+          <TabsList className="gap-6 px-4">
+            <TabsTrigger value="designs" className="gap-1.5">
               <LayoutGrid size={15} />내 디자인
-              <span className="ml-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#efefef] px-1.5 text-[10px] font-bold text-[#62625b] group-aria-selected:bg-[#211922] group-aria-selected:text-white">
-                {profile._count.designs}
+              <span className="bg-secondary text-muted-foreground in-aria-selected:bg-foreground in-aria-selected:text-background rounded-full px-2 py-0.5 text-xs">
+                {profile.designCount}
               </span>
             </TabsTrigger>
-            <TabsTrigger value="purchases" className="text-[15px]">
+            <TabsTrigger value="purchases" className="gap-1.5">
               <ShoppingBag size={15} />
               구매 내역
-              <span className="ml-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#efefef] px-1.5 text-[10px] font-bold text-[#62625b] group-aria-selected:bg-[#211922] group-aria-selected:text-white">
-                {profile._count.purchases}
+              <span className="bg-secondary text-muted-foreground in-aria-selected:bg-foreground in-aria-selected:text-background rounded-full px-2 py-0.5 text-xs">
+                {purchases.length}
               </span>
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="designs">{designsGrid}</TabsContent>
-          <TabsContent value="purchases">
-            {/* 데스크탑: 리스트 행 / 모바일: 카드 */}
-            <div className="sm:divide-y sm:divide-[#efefef]">
-              {purchaseList.map(purchase => (
-                <Link key={purchase.id} href={`/designs/${purchase.design.id}`} className="group block">
-                  {/* 모바일: 카드 */}
-                  <div className="p-3 sm:hidden">
-                    <div className="overflow-hidden rounded-[16px] border border-[#efefef]">
-                      <div className="relative aspect-4/3 w-full overflow-hidden bg-[#efefef]">
-                        {purchase.design.thumbnail && (
-                          <Image
-                            src={purchase.design.thumbnail}
-                            alt={purchase.design.title}
-                            fill
-                            className="object-cover"
-                          />
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <p className="text-[15px] font-semibold text-[#211922]">{purchase.design.title}</p>
-                        <div className="mt-1.5 flex items-center gap-2">
-                          <span className="inline-block h-6 w-6 shrink-0 rounded-full bg-[#e0e0d9]" />
-                          <span className="text-[13px] text-[#767676]">{purchase.design.author.name}</span>
-                        </div>
-                        <div className="mt-3 flex items-center justify-between border-t border-[#efefef] pt-3">
-                          <span className="text-[13px] text-[#91918c]">
-                            {purchase.purchasedAt.toLocaleDateString('ko-KR', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit'
-                            })}
-                          </span>
-                          <span className="text-[15px] font-bold text-[#211922]">
-                            ₩{purchase.design.price.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* 데스크탑: 리스트 행 */}
-                  <div className="hidden items-center gap-4 px-4 py-3 transition-colors hover:bg-[#fafafa] sm:flex">
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-[8px] bg-[#efefef]">
-                      {purchase.design.thumbnail && (
-                        <Image
-                          src={purchase.design.thumbnail}
-                          alt={purchase.design.title}
-                          fill
-                          className="object-cover"
-                        />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[14px] font-semibold text-[#211922]">{purchase.design.title}</p>
-                      <div className="mt-0.5 flex items-center gap-1.5">
-                        <span className="inline-block h-4 w-4 shrink-0 rounded-full bg-[#e0e0d9]" />
-                        <span className="text-[13px] text-[#767676]">{purchase.design.author.name}</span>
-                      </div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-[14px] font-semibold text-[#211922]">
-                        ₩{purchase.design.price.toLocaleString()}
-                      </p>
-                      <p className="mt-0.5 text-[12px] text-[#91918c]">
-                        {purchase.purchasedAt.toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit'
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-              {purchaseList.length === 0 && (
-                <p className="py-20 text-center text-[14px] text-[#91918c]">구매한 디자인이 없어요</p>
-              )}
-            </div>
+
+          {/* 내 디자인 탭 */}
+          <TabsContent value="designs">
+            {designs.length === 0 ? (
+              <p className="text-muted-foreground py-20 text-center text-sm">아직 등록한 디자인이 없어요</p>
+            ) : (
+              <div className="columns-[200px] gap-2.5 p-4">
+                {designs.map(design => (
+                  <DesignCard key={design.id} design={design} />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* 구매 내역 탭 */}
+          <TabsContent value="purchases" className="px-4">
+            {purchases.length === 0 ? (
+              <p className="text-muted-foreground py-20 text-center text-sm">아직 구매한 디자인이 없어요</p>
+            ) : (
+              <ul>
+                {purchases.map(purchase => (
+                  <PurchaseItem key={purchase.id} purchase={purchase} />
+                ))}
+              </ul>
+            )}
           </TabsContent>
         </Tabs>
       ) : (
-        <div className="columns-[200px] gap-2.5 p-4">
-          {designs.map(design => (
-            <DesignCard key={design.id} design={design} />
-          ))}
-          {designs.length === 0 && (
-            <p className="py-20 text-center text-[14px] text-[#91918c]">등록한 디자인이 없어요</p>
+        // 타인 프로필 — 탭 없이 그리드
+        <>
+          {designs.length === 0 ? (
+            <p className="text-muted-foreground py-20 text-center text-sm">아직 등록한 디자인이 없어요</p>
+          ) : (
+            <div className="columns-[200px] gap-2.5 p-4">
+              {designs.map(design => (
+                <DesignCard key={design.id} design={design} />
+              ))}
+            </div>
           )}
-        </div>
+        </>
       )}
     </div>
+  );
+}
+
+// 구매 내역 날짜 포맷 (2025.12.15)
+function formatDate(date: Date): string {
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+}
+
+// 구매 내역 단일 아이템 — 데스크탑 행 / 모바일 카드 반응형
+function PurchaseItem({ purchase }: { purchase: PurchaseItemType }) {
+  return (
+    <li className="border-b last:border-b-0">
+      {/* 모바일: 카드 레이아웃 */}
+      <div className="block py-4 sm:hidden">
+        <div className="bg-secondary relative aspect-video w-full overflow-hidden rounded-lg">
+          <Image
+            src={purchase.design.thumbnail}
+            alt={purchase.design.title}
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
+        </div>
+        <div className="mt-3 px-1">
+          <p className="text-sm leading-snug font-semibold">{purchase.design.title}</p>
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <span className="bg-secondary inline-block size-5 shrink-0 rounded-full" />
+            <span className="text-muted-foreground text-xs">{purchase.design.author.name}</span>
+          </div>
+          <p className="mt-1 text-sm font-semibold">₩{purchase.amount.toLocaleString()}</p>
+        </div>
+      </div>
+
+      {/* 데스크탑: 행 레이아웃 */}
+      <div className="hidden items-center gap-4 py-4 sm:flex">
+        <div className="bg-secondary relative size-18 shrink-0 overflow-hidden rounded-lg">
+          <Image
+            src={purchase.design.thumbnail}
+            alt={purchase.design.title}
+            fill
+            className="object-cover"
+            sizes="72px"
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm leading-snug font-semibold">{purchase.design.title}</p>
+          <div className="mt-1 flex items-center gap-1.5">
+            <span className="bg-secondary inline-block size-5 shrink-0 rounded-full" />
+            <span className="text-muted-foreground text-xs">{purchase.design.author.name}</span>
+          </div>
+        </div>
+        <div className="shrink-0 text-right">
+          <p className="text-sm font-semibold">₩{purchase.amount.toLocaleString()}</p>
+          <p className="text-muted-foreground mt-0.5 text-xs">{formatDate(purchase.purchasedAt)}</p>
+        </div>
+      </div>
+    </li>
   );
 }

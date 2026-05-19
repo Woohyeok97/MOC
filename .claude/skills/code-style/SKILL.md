@@ -86,7 +86,43 @@ function Component() {
 
 ---
 
-<!-- 새 안티 패턴은 여기 아래에 CS-3, CS-4, ... 형식으로 추가 -->
+### CS-3: 파일 내 컴포넌트 배치 순서 — 메인 컴포넌트를 상단에
+
+**원칙**: 하나의 파일에 여러 컴포넌트가 있을 때, 메인(export default) 컴포넌트를 파일 상단에 먼저 배치하고 분리된 서브 컴포넌트는 아래에 배치.
+
+**Before** (피할 패턴):
+
+```tsx
+// 서브 컴포넌트가 먼저 등장
+function PurchaseList({ purchases }: { purchases: PurchaseItem[] }) {
+  return <ul>{/* ... */}</ul>;
+}
+
+// 메인 컴포넌트가 뒤에
+export default async function ProfilePage({ params }: { params: Params }) {
+  return <div><PurchaseList purchases={purchases} /></div>;
+}
+```
+
+**After** (선호 패턴):
+
+```tsx
+// 메인 컴포넌트를 먼저
+export default async function ProfilePage({ params }: { params: Params }) {
+  return <div><PurchaseList purchases={purchases} /></div>;
+}
+
+// 서브 컴포넌트는 아래에
+function PurchaseList({ purchases }: { purchases: PurchaseItem[] }) {
+  return <ul>{/* ... */}</ul>;
+}
+```
+
+**왜**: 파일을 열었을 때 "이 파일이 무엇을 하는 파일인가"가 첫 줄에서 바로 보여야 함. 서브 컴포넌트를 먼저 보여주면 맥락 없이 세부 구현부터 읽게 되어 파악 속도가 느려짐.
+
+---
+
+<!-- 새 안티 패턴은 여기 아래에 CS-4, CS-5, ... 형식으로 추가 -->
 
 ---
 
