@@ -54,21 +54,17 @@ export default async function ProfilePage({ params }: Props) {
       {/* 컨텐츠 */}
       {isOwner && purchaseList ? (
         <Tabs defaultValue="designs">
-          <TabsList variant="line" className="border-b-secondary flex w-full justify-start gap-6 border px-4">
-            <TabsTrigger
-              value="designs"
-              className="group/trigger flex-none gap-1.5 px-0 py-4 text-[15px] group-data-horizontal/tabs:after:bottom-0">
+          <TabsList className="gap-6 px-6">
+            <TabsTrigger value="designs" className="text-[15px]">
               <LayoutGrid size={15} />내 디자인
-              <span className="ml-0.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold group-data-[state=active]/trigger:bg-[#211922] group-data-[state=active]/trigger:text-white group-data-[state=inactive]/trigger:bg-[#efefef] group-data-[state=inactive]/trigger:text-[#62625b]">
+              <span className="ml-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#efefef] px-1.5 text-[10px] font-bold text-[#62625b] group-aria-selected:bg-[#211922] group-aria-selected:text-white">
                 {profile._count.designs}
               </span>
             </TabsTrigger>
-            <TabsTrigger
-              value="purchases"
-              className="group/trigger flex-none gap-1.5 px-0 py-4 text-[15px] group-data-horizontal/tabs:after:bottom-0">
+            <TabsTrigger value="purchases" className="text-[15px]">
               <ShoppingBag size={15} />
               구매 내역
-              <span className="ml-0.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold group-data-[state=active]/trigger:bg-[#211922] group-data-[state=active]/trigger:text-white group-data-[state=inactive]/trigger:bg-[#efefef] group-data-[state=inactive]/trigger:text-[#62625b]">
+              <span className="ml-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#efefef] px-1.5 text-[10px] font-bold text-[#62625b] group-aria-selected:bg-[#211922] group-aria-selected:text-white">
                 {profile._count.purchases}
               </span>
             </TabsTrigger>
