@@ -4,11 +4,11 @@
 // 서버가 진실의 원천 — 인증 상태 변화(로그인·로그아웃)는 모두 redirect()로 끝나므로 서버가 새 initialUser를 내려줄 때 store가 자동으로 갱신됨
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { UserProfile } from '@/entities/user/user.type';
+import type { UserProfileType } from '@/entities/user/user.type';
 import { useAuthStore } from '@/features/auth/auth.store';
 
 interface Props {
-  initialUser: UserProfile | null;
+  initialUser: UserProfileType | null;
   children: ReactNode;
 }
 

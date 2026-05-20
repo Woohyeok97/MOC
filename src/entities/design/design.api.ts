@@ -37,8 +37,15 @@ export async function getIsPurchased(_userId: string, _designId: string): Promis
 }
 
 export const getUserDesignList = cache(async (userId: string): Promise<Design[]> => {
-  return prisma.design.findMany({
+  const designs = await prisma.design.findMany({
     where: { authorId: userId },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'desc' }
   });
+
+  // thumbnail, images는 스토리지 path로 저장되어 있어 공개 URL로 변환
+  const supabase = await createClient();
+  return designs.map(design => ({
+    ...design,
+    thumbnail: getPublicImageUrl(supabase, design.thumbnail)
+  }));
 });

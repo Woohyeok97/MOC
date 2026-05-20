@@ -1,17 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { createClient } from '@/shared/api/supabase/server';
-import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 import type { Design } from '@/entities/design/design.type';
 
-export async function DesignCard({ design }: { design: Design }) {
-  const supabase = await createClient();
-  const thumbnailUrl = design.thumbnail ? getPublicImageUrl(supabase, design.thumbnail) : null;
+export function DesignCard({ design }: { design: Design }) {
+  const thumbnailUrl = design.thumbnail || null;
 
   return (
     <Link
       href={`/designs/${design.id}`}
-      className="group mb-[10px] block cursor-pointer break-inside-avoid transition-transform duration-170 ease-out hover:-translate-y-0.5">
+      className="group mb-2.5 block cursor-pointer break-inside-avoid transition-transform duration-170 ease-out hover:-translate-y-0.5">
       <div className="relative overflow-hidden rounded-[14px] bg-[#efefef]">
         {thumbnailUrl && (
           <Image
@@ -27,7 +24,7 @@ export async function DesignCard({ design }: { design: Design }) {
         {/* hover 오버레이 — 기본 숨김, hover 시 fade in */}
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-180 group-hover:opacity-100">
           {/* 카테고리 배지 */}
-          <span className="bg-primary absolute top-[10px] left-[10px] rounded-full px-[10px] py-1 text-[10px] font-semibold tracking-[0.2px] text-white shadow-[0_2px_6px_rgba(0,102,255,0.35)]">
+          <span className="bg-primary absolute top-2.5 left-2.5 rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-[0.2px] text-white shadow-[0_2px_6px_rgba(0,102,255,0.35)]">
             {design.category}
           </span>
 

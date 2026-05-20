@@ -76,10 +76,13 @@ UI 컴포넌트는 PascalCase 파일명: `DesignCreateForm.tsx`
 | React 컴포넌트    | PascalCase              | `DesignCard`                   |
 | Zod 스키마        | PascalCase + `Schema`   | `DesignCreateSchema`           |
 | 스키마 추론 타입  | PascalCase + `FormType` | `DesignCreateFormType`         |
+| 도메인 엔티티 타입 | PascalCase + `Type`    | `PurchaseItemType`, `UserProfileType` |
 | Zustand 스토어    | `use[Feature]Store`     | `useAuthStore`                 |
 | 스토어 인터페이스 | `[Feature]State`        | `AuthState`                    |
 | API 함수          | `get[Entity]`           | `getDesigns`, `getCurrentUser` |
 | 상수              | UPPER_SNAKE_CASE        | `MAX_IMAGE_COUNT`              |
+
+> **도메인 엔티티 타입**: `*.type.ts` 파일에 정의하는 interface/type 중 도메인 객체를 나타내는 것에만 적용. 라우트 파라미터(`Params`), 유틸리티 타입 등 로컬 범위에서 쓰는 보조 타입은 제외.
 
 ### 타입 임포트
 
