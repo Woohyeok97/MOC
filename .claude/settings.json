@@ -1,5 +1,14 @@
 {
   "permissions": {
-    "allow": ["Bash(mkdir:*)", "Bash(npm:*)", "Bash(yarn:*)", "Bash(git:*)"]
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)",
+      "Bash(git:*)",
+      "Bash(npx:*)",
+      "Bash(gstack:*)",
+      "Bash(curl:*)",
+      "Bash(open:*)"
+    ]
   }
 }

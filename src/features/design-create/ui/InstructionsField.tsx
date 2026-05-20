@@ -1,26 +1,25 @@
-// PDF 설명서 업로드 섹션 (최대 2개, 유료일 때 필수)
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useController, useFormContext } from 'react-hook-form';
-// types
+import { useController, useFormContext, useWatch } from 'react-hook-form';
+// types & schemas
 import type { DesignCreateFormType } from '../design-create.schema';
 
 const MAX = 2;
 
-export function InstructionsSection() {
-  const {
-    control,
-    watch,
-    setError,
-    clearErrors,
-    formState: { errors, isSubmitted },
-  } = useFormContext<DesignCreateFormType>();
-  const { field } = useController({ control, name: 'instructions' });
+// PDF 설명서 업로드 필드 (최대 2개, 유료일 때 필수)
+export function InstructionsField() {
+  const { control, setError, clearErrors, formState } = useFormContext<DesignCreateFormType>();
+  const { errors, isSubmitted } = formState;
 
-  const value: File[] = field.value;
-  const price = watch('price');
-  const isPaid = price > 0;
+  // instructions 필드 컨트롤러
+  const { field: instructionsField } = useController({ control, name: 'instructions' });
+
+  const value: File[] = instructionsField.value;
+
+  // useWatch로 isFree 구독 — price > 0 대신 사용자 의도를 단일 소스로 참조
+  const isFree = useWatch({ control, name: 'isFree' });
+  const isPaid = !isFree;
 
   // 첫 제출 이후: 유료인데 instructions 없으면 에러 표시 / 해소 시 클리어
   useEffect(() => {
@@ -33,23 +32,28 @@ export function InstructionsSection() {
   }, [isPaid, value.length, isSubmitted, setError, clearErrors]);
 
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // 활성화된 슬롯
   const [activeSlot, setActiveSlot] = useState<number | null>(null);
 
+  // 슬롯 클릭 시 파일 선택 input 트리거
   const handleClick = (i: number) => {
     setActiveSlot(i);
     inputRef.current?.click();
   };
 
+  // 파일 선택 핸들러 - 선택된 파일을 해당 슬롯에 삽입
   const handleFile = (file: File | undefined) => {
     if (!file || activeSlot === null) return;
     const next = [...value];
     next[activeSlot] = file;
-    field.onChange(next);
+    instructionsField.onChange(next);
     setActiveSlot(null);
   };
 
+  // 파일 제거 핸들러 - 해당 인덱스 PDF 제거
   const handleRemove = (i: number) => {
-    field.onChange(value.filter((_, idx) => idx !== i));
+    instructionsField.onChange(value.filter((_, idx) => idx !== i));
   };
 
   // superRefine 배열 루트 에러는 .root.message, 필드 에러는 .message에 위치
@@ -61,18 +65,20 @@ export function InstructionsSection() {
       {Array.from({ length: MAX }).map((_, i) => {
         const file = value[i];
         return file ? (
-          <div key={i} className="flex items-center gap-3 rounded-xl border border-border bg-muted p-3.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-primary text-[11px] font-bold text-white">
+          <div key={i} className="border-border bg-muted flex items-center gap-3 rounded-xl border p-3.5">
+            <div className="bg-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] text-[11px] font-bold text-white">
               PDF
             </div>
             <div className="flex-1 overflow-hidden">
-              <p className="truncate text-[13px] font-semibold text-surface-dark">{file.name}</p>
-              <p className="text-[11px] text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB · Instructions</p>
+              <p className="text-surface-dark truncate text-[13px] font-semibold">{file.name}</p>
+              <p className="text-muted-foreground text-[11px]">
+                {(file.size / 1024 / 1024).toFixed(2)} MB · Instructions
+              </p>
             </div>
             <button
               type="button"
               onClick={() => handleRemove(i)}
-              className="text-[13px] font-semibold text-muted-foreground transition-colors hover:text-surface-dark">
+              className="text-muted-foreground hover:text-surface-dark text-[13px] font-semibold transition-colors">
               Remove
             </button>
           </div>
@@ -81,19 +87,19 @@ export function InstructionsSection() {
             key={i}
             type="button"
             onClick={() => handleClick(i)}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-xl border-[1.5px] border-dashed border-border bg-card p-3.5 transition-colors hover:border-primary">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-border bg-secondary text-[11px] font-bold text-muted-foreground">
+            className="border-border bg-card hover:border-primary flex w-full cursor-pointer items-center gap-3 rounded-xl border-[1.5px] border-dashed p-3.5 transition-colors">
+            <div className="border-border bg-secondary text-muted-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border text-[11px] font-bold">
               PDF
             </div>
             <div className="min-w-0 flex-1 text-left">
-              <p className="text-[13px] font-semibold text-surface-dark">
+              <p className="text-surface-dark text-[13px] font-semibold">
                 Upload Instructions PDF ({value.length}/{MAX})
               </p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">
+              <p className="text-muted-foreground mt-0.5 text-[11px]">
                 {isPaid ? 'Required for paid designs' : 'Optional · Up to 2 files'}
               </p>
             </div>
-            <span className="shrink-0 text-[12px] font-bold text-primary">Select File</span>
+            <span className="text-primary shrink-0 text-[12px] font-bold">Select File</span>
           </button>
         );
       })}

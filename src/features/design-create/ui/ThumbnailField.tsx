@@ -1,4 +1,3 @@
-// 썸네일 업로드 섹션 (드래그앤드롭 지원)
 'use client';
 
 import { useEffect, useMemo, useRef } from 'react';
@@ -6,17 +5,18 @@ import { useController, useFormContext } from 'react-hook-form';
 import Image from 'next/image';
 // icons
 import { ImageIcon } from 'lucide-react';
-// types
+// types & schemas
 import type { DesignCreateFormType } from '../design-create.schema';
 
-export function ThumbnailSection() {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext<DesignCreateFormType>();
-  const { field } = useController({ control, name: 'thumbnail' });
+// 썸네일 업로드 필드 (드래그앤드롭 지원)
+export function ThumbnailField() {
+  const { control, formState } = useFormContext<DesignCreateFormType>();
+  const { errors } = formState;
 
-  const value = field.value as File | undefined;
+  // thumbnail 필드 컨드롤러
+  const { field: thumbnailField } = useController({ control, name: 'thumbnail' });
+
+  const value = thumbnailField.value as File | undefined;
   const inputRef = useRef<HTMLInputElement>(null);
 
   // 이미지 미리보기용 임시 URL — value가 바뀔 때만 재생성
@@ -29,14 +29,16 @@ export function ThumbnailSection() {
     };
   }, [previewUrl]);
 
+  // 파일 선택 핸들러
   const handleFile = (file: File | undefined) => {
     if (!file) return;
-    field.onChange(file);
+    thumbnailField.onChange(file);
   };
 
+  // 썸네일 제거 핸들러 — 이벤트 버블링 차단 후 필드 초기화
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
-    field.onChange(null);
+    thumbnailField.onChange(null);
   };
 
   const error = errors.thumbnail?.message as string | undefined;
@@ -54,10 +56,11 @@ export function ThumbnailSection() {
           error
             ? 'border-red-400 bg-red-50'
             : value
-              ? 'cursor-default border-primary bg-black'
-              : 'cursor-pointer border-dashed border-border bg-muted hover:border-primary hover:bg-blue-50'
+              ? 'border-primary cursor-default bg-black'
+              : 'border-border bg-muted hover:border-primary cursor-pointer border-dashed hover:bg-blue-50'
         }`}>
         <input ref={inputRef} type="file" accept="image/*" hidden onChange={e => handleFile(e.target.files?.[0])} />
+
         {previewUrl ? (
           <>
             <Image src={previewUrl} alt="thumbnail" fill unoptimized className="object-cover" />
@@ -67,20 +70,21 @@ export function ThumbnailSection() {
               className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-[13px] text-white">
               ×
             </button>
-            <span className="absolute bottom-1.5 left-1.5 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
+            <span className="bg-primary absolute bottom-1.5 left-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold text-white">
               Thumbnail
             </span>
           </>
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-[16px] border-[1.5px] border-border bg-card">
-              <ImageIcon className="h-[22px] w-[22px] text-primary" />
+            <div className="border-border bg-card flex h-14 w-14 items-center justify-center rounded-[16px] border-[1.5px]">
+              <ImageIcon className="text-primary h-5.5 w-5.5" />
             </div>
-            <p className="text-[14px] font-bold text-surface-dark">Upload thumbnail</p>
-            <p className="text-[12px] text-muted-foreground">Click or drag · JPG, PNG · Max 10MB</p>
+            <p className="text-surface-dark text-[14px] font-bold">Upload thumbnail</p>
+            <p className="text-muted-foreground text-[12px]">Click or drag · JPG, PNG · Max 10MB</p>
           </div>
         )}
       </div>
+
       {error ? <p className="mt-1.5 text-[11px] text-red-500">{error}</p> : null}
     </div>
   );
