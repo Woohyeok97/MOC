@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Search, LogOut } from 'lucide-react';
+import { Search, LogOut, User } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
@@ -69,6 +69,13 @@ export function Header() {
             <DropdownMenuLabel className="px-2.5 py-2 text-[13px] font-bold text-[#211922]">
               {user.name}
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href={`/profile/${user.id}`} className="flex items-center gap-2.5">
+                <User size={15} />
+                내 프로필
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" asChild>
               <form action={signOut}>

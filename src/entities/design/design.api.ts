@@ -2,7 +2,7 @@ import { cache } from 'react';
 import { prisma } from '@/shared/api/prisma';
 import { createClient } from '@/shared/api/supabase/server';
 import { getPublicImageUrl } from '@/shared/api/supabase/storage';
-import type { DesignWithAuthor } from '@/entities/design/design.type';
+import type { Design, DesignWithAuthor } from '@/entities/design/design.type';
 import { MOCK_DESIGNS } from './design.mock';
 
 // TODO: DB 연결 후 prisma.design.findMany로 교체
@@ -35,3 +35,17 @@ export const getDesignById = cache(async (id: string): Promise<DesignWithAuthor 
 export async function getIsPurchased(_userId: string, _designId: string): Promise<boolean> {
   return false;
 }
+
+export const getUserDesignList = cache(async (userId: string): Promise<Design[]> => {
+  const designs = await prisma.design.findMany({
+    where: { authorId: userId },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  // thumbnail, images는 스토리지 path로 저장되어 있어 공개 URL로 변환
+  const supabase = await createClient();
+  return designs.map(design => ({
+    ...design,
+    thumbnail: getPublicImageUrl(supabase, design.thumbnail)
+  }));
+});

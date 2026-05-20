@@ -3,12 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/shared/api/prisma';
 import { createServiceRoleClient } from '@/shared/api/supabase/server';
-import { getCurrentUser } from '@/features/auth/auth.api';
+import { getAuthSession } from '@/features/auth/auth.api';
 import { getDesignById, getIsPurchased } from '@/entities/design/design.api';
 
 // TODO: 결제 플로우 완성 후 이 앞에 결제 검증 로직 추가
 export async function purchaseDesign(designId: string): Promise<void> {
-  const user = await getCurrentUser();
+  const user = await getAuthSession();
   if (!user) throw new Error('로그인이 필요합니다.');
 
   await prisma.purchase.create({
@@ -20,7 +20,7 @@ export async function purchaseDesign(designId: string): Promise<void> {
 
 export async function getInstructionUrl(designId: string, index: number): Promise<string> {
   // 1. 로그인 + 디자인 조회 병렬 실행 (독립적)
-  const [user, design] = await Promise.all([getCurrentUser(), getDesignById(designId)]);
+  const [user, design] = await Promise.all([getAuthSession(), getDesignById(designId)]);
   if (!user) throw new Error('로그인이 필요합니다.');
   if (!design) throw new Error('존재하지 않는 디자인입니다.');
 

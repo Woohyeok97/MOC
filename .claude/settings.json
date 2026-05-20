@@ -1,5 +1,5 @@
 {
-  "worktree": {
-    "baseRef": "head"
+  "permissions": {
+    "allow": ["Bash(mkdir:*)", "Bash(npm:*)", "Bash(yarn:*)", "Bash(git:*)"]
   }
 }

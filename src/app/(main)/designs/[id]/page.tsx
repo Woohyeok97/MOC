@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { LogIn, Share2, Check, Bookmark, PencilLine } from 'lucide-react';
 import { getDesignById, getIsPurchased } from '@/entities/design/design.api';
-import { getCurrentUser } from '@/features/auth/auth.api';
+import { getAuthSession } from '@/features/auth/auth.api';
 // components
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -17,11 +17,12 @@ type ViewerState =
   | 'unbought' // 로그인 + 유료 + 미구매 + 설명서 있음
   | 'bought' // 로그인 + 유료 + 구매함 + 설명서 있음
   | 'free' // 로그인 + 무료 + 설명서 있음
-  | 'no_instructions'; // 무료 + 설명서 없음
+  | 'no_instructions' // 무료 + 설명서 없음
+  | 'guest_no_instructions'; // 비로그인 + 설명서 없음
 
 export default async function DesignDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: designId } = await params;
-  const [design, user] = await Promise.all([getDesignById(designId), getCurrentUser()]);
+  const [design, user] = await Promise.all([getDesignById(designId), getAuthSession()]);
 
   // 해당 디자인이 없는 경우
   if (!design) notFound();
