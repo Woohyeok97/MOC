@@ -32,13 +32,14 @@ export async function GET(request: NextRequest) {
     const userId = claims.sub;
     // 구글 프로필에서 가져온 표시 이름 (full_name 우선, 없으면 name)
     const name = (claims.user_metadata?.full_name ?? claims.user_metadata?.name ?? null) as string | null;
+    const avatarUrl = (claims.user_metadata?.avatar_url ?? null) as string | null;
 
-    // 3. 첫 로그인이면 users 테이블에 INSERT, 재로그인이면 이름 UPDATE
+    // 3. 첫 로그인이면 users 테이블에 INSERT, 재로그인이면 이름·아바타 UPDATE
     try {
       await prisma.user.upsert({
         where: { id: userId },
-        update: { name },
-        create: { id: userId, name }
+        update: { name, avatarUrl },
+        create: { id: userId, name, avatarUrl }
       });
     } catch (prismaError) {
       // DB 동기화 실패해도 로그인 자체는 성공 처리 — 재시도 불필요

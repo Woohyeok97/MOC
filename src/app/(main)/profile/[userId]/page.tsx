@@ -4,7 +4,7 @@ import Image from 'next/image';
 // icons
 import { LayoutGrid, ShoppingBag } from 'lucide-react';
 // features
-import { getCurrentUser } from '@/features/auth/auth.api';
+import { getAuthSession } from '@/features/auth/auth.api';
 // entities
 import { getUserProfile, getUserPurchaseList } from '@/entities/user/user.api';
 import { getUserDesignList } from '@/entities/design/design.api';
@@ -20,9 +20,9 @@ type Params = Promise<{ userId: string }>;
 export default async function ProfilePage({ params }: { params: Params }) {
   const { userId } = await params;
 
-  // 1. 현재 로그인 유저 확인 (cache()로 중복 호출 방지)
-  const currentUser = await getCurrentUser();
-  const isOwner = currentUser?.id === userId;
+  // 1. 현재 로그인 유저 확인
+  const session = await getAuthSession();
+  const isOwner = session?.id === userId;
 
   // 2. 프로필 + 디자인 목록 + (본인이면) 구매 내역 병렬 패치
   const [profile, designs, purchases] = await Promise.all([
@@ -33,9 +33,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
 
   if (!profile) notFound();
 
-  // 3. 아바타 — 본인이고 avatarUrl 있으면 사용, 없으면 이니셜
-  const avatarUrl = isOwner ? (currentUser?.avatarUrl ?? null) : null;
-  const initial = (profile.name ?? 'U')[0].toUpperCase();
+  const userNameInitial = (profile.name ?? 'U')[0].toUpperCase();
 
   // 본인 여부
   const isOwnProfile = isOwner && purchases !== null;
@@ -46,11 +44,11 @@ export default async function ProfilePage({ params }: { params: Params }) {
       <div className="flex flex-col items-center border-b px-4 py-12 md:py-16">
         {/* 아바타 */}
         <div className="ring-primary bg-secondary relative size-20 shrink-0 overflow-hidden rounded-full ring-[3px] md:size-24">
-          {avatarUrl ? (
-            <Image src={avatarUrl} alt={profile.name ?? '프로필'} fill className="object-cover" sizes="96px" />
+          {profile.avatarUrl ? (
+            <Image src={profile.avatarUrl} alt={profile.name ?? '프로필'} fill className="object-cover" sizes="96px" />
           ) : (
             <span className="text-muted-foreground flex h-full w-full items-center justify-center text-2xl font-bold">
-              {initial}
+              {userNameInitial}
             </span>
           )}
         </div>
@@ -74,7 +72,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
             <TabsTrigger value="designs" className="gap-1.5">
               <LayoutGrid size={15} />내 디자인
               <span className="bg-secondary text-muted-foreground in-aria-selected:bg-foreground in-aria-selected:text-background rounded-full px-2 py-0.5 text-xs">
-                {profile.designCount}
+                {designs.length}
               </span>
             </TabsTrigger>
             <TabsTrigger value="purchases" className="gap-1.5">

@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/shared/lib/utils';
-import { getCurrentUser } from '@/features/auth/auth.api';
+import { getAuthSession } from '@/features/auth/auth.api';
+import { getUserProfile } from '@/entities/user/user.api';
 import { AuthProvider } from '@/features/auth/ui/AuthProvider';
 import { QueryProvider } from './query-provider';
 
@@ -18,7 +19,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const user = await getCurrentUser();
+  const session = await getAuthSession();
+  const user = session ? await getUserProfile(session.id) : null;
 
   return (
     <html lang="en" className={cn('font-sans', plusJakartaSans.variable)}>

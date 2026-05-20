@@ -2,25 +2,21 @@
 
 import { cache } from 'react';
 import { prisma } from '@/shared/api/prisma';
-import type { UserWithCount, PurchaseItemType } from '@/entities/user/user.type';
+import type { UserProfileType, PurchaseItemType } from '@/entities/user/user.type';
 
-// 유저 프로필 + 디자인 수 조회
-export const getUserProfile = cache(async (userId: string): Promise<UserWithCount | null> => {
+// 유저 프로필 조회 — 현재 로그인 유저 / 다른 유저 공통으로 사용
+export const getUserProfile = cache(async (userId: string): Promise<UserProfileType | null> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
       name: true,
-      _count: { select: { designs: true } },
-    },
+      avatarUrl: true
+    }
   });
   if (!user) return null;
 
-  return {
-    id: user.id,
-    name: user.name,
-    designCount: user._count.designs,
-  };
+  return user;
 });
 
 // TODO: DB 연결 후 prisma.purchase.findMany로 교체
@@ -34,8 +30,8 @@ export const getUserPurchaseList = cache(async (_userId: string): Promise<Purcha
         id: '2',
         title: '사이버펑크 레이서 V2',
         thumbnail: 'https://picsum.photos/seed/lego-mech/600/400',
-        author: { name: 'NeoBricks', avatarUrl: null },
-      },
+        author: { name: 'NeoBricks', avatarUrl: null }
+      }
     },
     {
       id: 'p2',
@@ -45,8 +41,8 @@ export const getUserPurchaseList = cache(async (_userId: string): Promise<Purcha
         id: '4',
         title: 'UCS급 X-윙 스타파이터',
         thumbnail: 'https://picsum.photos/seed/lego-space/600/600',
-        author: { name: 'StarDesigner', avatarUrl: null },
-      },
+        author: { name: 'StarDesigner', avatarUrl: null }
+      }
     },
     {
       id: 'p3',
@@ -56,8 +52,8 @@ export const getUserPurchaseList = cache(async (_userId: string): Promise<Purcha
         id: '6',
         title: '심해 탐사 잠수함',
         thumbnail: 'https://picsum.photos/seed/lego-sub/600/500',
-        author: { name: 'OceanBrick', avatarUrl: null },
-      },
+        author: { name: 'OceanBrick', avatarUrl: null }
+      }
     },
     {
       id: 'p4',
@@ -67,8 +63,8 @@ export const getUserPurchaseList = cache(async (_userId: string): Promise<Purcha
         id: '1',
         title: '중세 성채 - 블랙 팔콘 요새',
         thumbnail: 'https://picsum.photos/seed/lego-castle/600/800',
-        author: { name: 'BrickMaster', avatarUrl: null },
-      },
-    },
+        author: { name: 'BrickMaster', avatarUrl: null }
+      }
+    }
   ];
 });

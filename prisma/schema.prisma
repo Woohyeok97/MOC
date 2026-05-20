@@ -16,8 +16,9 @@ enum DesignCategory {
 }
 
 model User {
-  id   String  @id      /// Supabase Auth의 user.id와 동일한 값
-  name String?          /// 구글 프로필에서 가져온 표시 이름 (타인 도안의 작성자명 표시용)
+  id        String  @id      /// Supabase Auth의 user.id와 동일한 값
+  name      String?          /// 구글 프로필에서 가져온 표시 이름
+  avatarUrl String?          /// 프로필 이미지 URL (초기값: 구글 계정 아바타)
 
   designs   Design[]
   purchases Purchase[]
