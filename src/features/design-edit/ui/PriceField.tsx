@@ -6,17 +6,15 @@ import type { DesignEditFormType } from '../design-edit.schema';
 
 // 가격 필드 (Free 체크박스 포함)
 export function PriceField() {
-  const { register, setValue, control, formState } = useFormContext<DesignEditFormType>();
+  const { register, setValue, control, trigger, formState } = useFormContext<DesignEditFormType>();
   const { errors } = formState;
-
-  // isFree 폼 필드 구독 — 유료/무료 전환 의도의 단일 소스
-  // watch() 파생 대신 폼 필드로 관리 — 직접 0 입력 시 체크박스가 자동 체크되는 부작용 방지
   const isFree = useWatch({ control, name: 'isFree' });
 
   // Free 체크박스 토글 핸들러 — 체크 시 price를 0으로 강제 설정
   const handleFreeToggle = (checked: boolean) => {
     setValue('isFree', checked);
     if (checked) setValue('price', 0);
+    if (formState.isSubmitted) trigger(); // isFree 변경시 유효성 재검증 (onSubmit 클릭 이후에만)
   };
 
   return (

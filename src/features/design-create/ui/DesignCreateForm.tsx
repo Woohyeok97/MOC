@@ -24,7 +24,7 @@ export function DesignCreateForm() {
     defaultValues: {
       title: '',
       description: '',
-      isFree: true,
+      isFree: false,
       price: 0,
       category: undefined,
       images: [],

@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useController, useFormContext, useWatch } from 'react-hook-form';
+import { useRef, useState } from 'react';
+import { useController, useFormContext } from 'react-hook-form';
 // types & schemas
 import type { DesignCreateFormType } from '../design-create.schema';
 
@@ -9,27 +9,15 @@ const MAX = 2;
 
 // PDF 설명서 업로드 필드 (최대 2개, 유료일 때 필수)
 export function InstructionsField() {
-  const { control, setError, clearErrors, formState } = useFormContext<DesignCreateFormType>();
-  const { errors, isSubmitted } = formState;
+  const { control, formState } = useFormContext<DesignCreateFormType>();
+  const { errors } = formState;
 
   // instructions 필드 컨트롤러
   const { field: instructionsField } = useController({ control, name: 'instructions' });
 
   const value: File[] = instructionsField.value;
 
-  // useWatch로 isFree 구독 — price > 0 대신 사용자 의도를 단일 소스로 참조
-  const isFree = useWatch({ control, name: 'isFree' });
-  const isPaid = !isFree;
-
   // 첫 제출 이후: 유료인데 instructions 없으면 에러 표시 / 해소 시 클리어
-  useEffect(() => {
-    if (!isSubmitted) return;
-    if (isPaid && value.length === 0) {
-      setError('instructions', { type: 'custom', message: 'Instructions PDF is required for paid designs.' });
-    } else {
-      clearErrors('instructions');
-    }
-  }, [isPaid, value.length, isSubmitted, setError, clearErrors]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,9 +43,6 @@ export function InstructionsField() {
   const handleRemove = (i: number) => {
     instructionsField.onChange(value.filter((_, idx) => idx !== i));
   };
-
-  // superRefine 배열 루트 에러는 .root.message, 필드 에러는 .message에 위치
-  const error = (errors.instructions?.root?.message ?? errors.instructions?.message) as string | undefined;
 
   return (
     <div className="space-y-2">
@@ -95,15 +80,14 @@ export function InstructionsField() {
               <p className="text-surface-dark text-[13px] font-semibold">
                 Upload Instructions PDF ({value.length}/{MAX})
               </p>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
-                {isPaid ? 'Required for paid designs' : 'Optional · Up to 2 files'}
-              </p>
             </div>
             <span className="text-primary shrink-0 text-[12px] font-bold">Select File</span>
           </button>
         );
       })}
-      {error ? <p className="mt-1.5 text-[11px] text-red-500">{error}</p> : null}
+      {errors.instructions?.message ? (
+        <p className="mt-1.5 text-[11px] text-red-500">{errors.instructions?.message}</p>
+      ) : null}
     </div>
   );
 }
