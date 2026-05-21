@@ -36,6 +36,11 @@ export async function getIsPurchased(_userId: string, _designId: string): Promis
   return false;
 }
 
+// URL 변환 없이 raw DB 데이터 반환 — 수정 폼 초기값 세팅용
+export const getDesignByIdRaw = cache(async (id: string): Promise<Design | null> => {
+  return await prisma.design.findUnique({ where: { id } });
+});
+
 export const getUserDesignList = cache(async (userId: string): Promise<Design[]> => {
   const designs = await prisma.design.findMany({
     where: { authorId: userId },

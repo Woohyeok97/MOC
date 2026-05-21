@@ -3,31 +3,42 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import Image from 'next/image';
+// api
+import { createClient } from '@/shared/api/supabase/client';
+import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 // icons
 import { ImageIcon } from 'lucide-react';
 // types & schemas
-import type { DesignCreateFormType } from '../design-create.schema';
+import type { DesignEditFormType } from '../design-edit.schema';
 
-// 썸네일 업로드 필드 (드래그앤드롭 지원)
+// 썸네일 업로드 필드 (드래그앤드롭 지원) — 기존 path(string) 또는 신규 File 처리
 export function ThumbnailField() {
-  const { control, formState } = useFormContext<DesignCreateFormType>();
+  const { control, formState } = useFormContext<DesignEditFormType>();
   const { errors } = formState;
 
-  // thumbnail 필드 컨드롤러
+  // thumbnail 필드 컨트롤러
   const { field: thumbnailField } = useController({ control, name: 'thumbnail' });
 
-  const value = thumbnailField.value as File | undefined;
+  const value = thumbnailField.value as File | string | undefined;
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 이미지 미리보기용 임시 URL — value가 바뀔 때만 재생성
-  const previewUrl = useMemo(() => (value ? URL.createObjectURL(value) : null), [value]);
+  // 이미지 미리보기용 URL — File이면 blob URL, string이면 supabase 공개 URL
+  const previewUrl = useMemo(() => {
+    if (!value) return null;
 
-  // previewUrl 교체 or 언마운트 시 blob URL 해제
+    // File이면 blob URL 변환 - 사용자가 새로운 이미지 업로드
+    if (value instanceof File) return URL.createObjectURL(value);
+
+    // string이면 스토리지 path로 공개 URL 계산 - 기존 spuabase storage에 업로드된 이미지 (네트워크 요청 없음)
+    return getPublicImageUrl(createClient(), value);
+  }, [value]);
+
+  // previewUrl 교체 or 언마운트 시 blob URL 해제 — string에서 계산한 URL은 revoke 불필요
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (previewUrl && value instanceof File) URL.revokeObjectURL(previewUrl);
     };
-  }, [previewUrl]);
+  }, [previewUrl, value]);
 
   // 파일 선택 핸들러
   const handleFile = (file: File | undefined) => {
