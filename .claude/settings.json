@@ -8,7 +8,11 @@
       "Bash(npx:*)",
       "Bash(gstack:*)",
       "Bash(curl:*)",
-      "Bash(open:*)"
+      "Bash(open:*)",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__navigate"
     ]
   }
 }

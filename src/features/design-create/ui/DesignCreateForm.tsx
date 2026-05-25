@@ -108,6 +108,18 @@ export function DesignCreateForm() {
             <Check className="h-4 w-4" />
             {isPending ? 'Publishing...' : 'Publish'}
           </Button>
+
+          {/* <Button
+            size="lg"
+            variant="outline"
+            className="rounded-xl px-7 text-[14px] font-bold"
+            onClick={e => {
+              e.preventDefault();
+              console.log(methods.getValues());
+            }}>
+            <Check className="h-4 w-4" />
+            Check
+          </Button> */}
         </div>
       </form>
     </FormProvider>
