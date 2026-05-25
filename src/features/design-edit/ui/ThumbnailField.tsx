@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { createClient } from '@/shared/api/supabase/client';
 import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 // icons
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, X } from 'lucide-react';
 // types & schemas
 import type { DesignEditFormType } from '../design-edit.schema';
 
@@ -76,8 +76,8 @@ export function ThumbnailField() {
             <button
               type="button"
               onClick={handleRemove}
-              className="absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-[13px] text-white">
-              ×
+              className="absolute top-1.5 right-1.5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white">
+              <X className="h-3.5 w-3.5" />
             </button>
             <span className="bg-primary absolute bottom-1.5 left-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold text-white">
               Thumbnail

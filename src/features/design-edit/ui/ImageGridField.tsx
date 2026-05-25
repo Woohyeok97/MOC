@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { createClient } from '@/shared/api/supabase/client';
 import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 // icons
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 // types & schemas
 import type { DesignEditFormType } from '../design-edit.schema';
 
@@ -67,8 +67,8 @@ export function ImageGridField() {
               <button
                 type="button"
                 onClick={() => handleRemove(i)}
-                className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-[11px] text-white">
-                ×
+                className="absolute top-1 right-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white">
+                <X className="h-3 w-3" />
               </button>
             </div>
           );
