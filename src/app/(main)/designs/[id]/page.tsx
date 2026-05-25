@@ -112,7 +112,7 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
             )}
 
             {viewerState === 'owner' && (
-              <Link href="#">
+              <Link href={`/designs/${designId}/edit`}>
                 <Button size="lg" variant="secondary" className="h-auto w-full text-sm">
                   <PencilLine /> 수정
                 </Button>

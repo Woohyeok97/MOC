@@ -70,9 +70,9 @@ export function DesignCreateForm() {
         {/* 이미지 */}
         <FormSection title="Images" desc="1 thumbnail + up to 6 gallery images">
           <div className="grid grid-cols-[240px_1fr] items-stretch gap-3.5 max-[640px]:grid-cols-1">
-            <div className="flex flex-col max-[640px]:h-60">
+            <div className="flex flex-col">
               <p className="text-muted-foreground mb-1.5 text-[11px] font-bold tracking-[0.3px]">Thumbnail</p>
-              <div className="flex-1">
+              <div className="flex-1 max-[640px]:aspect-square max-[640px]:flex-none">
                 <ThumbnailField />
               </div>
             </div>
