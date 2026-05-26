@@ -1,1 +1,0 @@
-/Users/baeg-uhyeog/Desktop/moc/.claude/skills/gstack/design-review/SKILL.md
