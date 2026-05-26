@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Search, LogOut, User } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
@@ -38,7 +39,7 @@ export function Header() {
   };
 
   return (
-    <header className="flex h-[52px] shrink-0 items-center gap-3 border-b border-[#efefef] bg-white px-4">
+    <header className="flex h-13 shrink-0 items-center gap-3 border-b border-[#efefef] bg-white px-4">
       {/* 로고 */}
       <Link href="/" className="flex shrink-0 items-center gap-1">
         <span className="text-[20px] leading-none font-bold tracking-[-0.5px] text-[#211922]">MOC</span>
@@ -60,10 +61,20 @@ export function Header() {
       {/* 로그인 상태에 따라 아바타 드롭다운 또는 로그인 버튼 표시 */}
       {user ? (
         <DropdownMenu>
-          <DropdownMenuTrigger className="h-[34px] w-[34px] overflow-hidden rounded-full bg-[#e0e0d9] ring-offset-0 outline-none data-[state=open]:ring-2 data-[state=open]:ring-[#211922]">
-            <span className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-[#62625b]">
-              {user.name?.[0] ?? '?'}
-            </span>
+          <DropdownMenuTrigger className="h-8.5 w-8.5 cursor-pointer overflow-hidden rounded-full bg-[#e0e0d9] ring-offset-0 outline-none transition-shadow duration-200 hover:ring-2 hover:ring-surface-dark data-[state=open]:ring-2 data-[state=open]:ring-surface-dark">
+            {user.avatarUrl ? (
+              <Image
+                src={user.avatarUrl}
+                alt={user.name ?? ''}
+                width={34}
+                height={34}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-[#62625b]">
+                {user.name?.[0] ?? '?'}
+              </span>
+            )}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" sideOffset={8}>
             <DropdownMenuLabel className="px-2.5 py-2 text-[13px] font-bold text-[#211922]">
@@ -72,8 +83,7 @@ export function Header() {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href={`/profile/${user.id}`} className="flex items-center gap-2.5">
-                <User size={15} />
-                내 프로필
+                <User size={15} />내 프로필
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -88,7 +98,7 @@ export function Header() {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Button variant="default" size="sm" className="h-[34px]" asChild>
+        <Button variant="default" size="sm" className="h-8.5" asChild>
           <Link href="/signin">로그인</Link>
         </Button>
       )}
