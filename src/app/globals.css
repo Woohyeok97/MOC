@@ -6,6 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-surface-dark: var(--surface-dark);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -82,6 +83,7 @@
   --sidebar-accent-foreground: #111111;
   --sidebar-border: #e5e5e0;
   --sidebar-ring: #0066ff;
+  --surface-dark: #211922;
 }
 
 @layer base {

@@ -1,5 +1,21 @@
 {
   "permissions": {
-    "allow": ["Bash(mkdir:*)", "Bash(npm:*)", "Bash(yarn:*)", "Bash(git:*)"]
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)",
+      "Bash(git:*)",
+      "Bash(npx:*)",
+      "Bash(curl:*)",
+      "Bash(open:*)",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_file_upload",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__navigate",
+      "mcp__supabase__execute_sql"
+    ]
   }
 }

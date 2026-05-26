@@ -4,7 +4,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 // hooks
-import { useCreateDesignMutation } from '../design-create.mutate';
+import { useUpdateDesignMutation } from '../design-edit.mutate';
 // components
 import { Button } from '@/shared/ui/button';
 import { BasicInfoField } from './BasicInfoField';
@@ -15,33 +15,49 @@ import { InstructionsField } from './InstructionsField';
 // icons
 import { Check } from 'lucide-react';
 // types & schemas
-import { DesignCreateSchema, type DesignCreateFormType } from '../design-create.schema';
+import { DesignEditSchema, type DesignEditFormType } from '../design-edit.schema';
+import type { Design } from '@/entities/design/design.type';
 
-// 디자인 등록 폼 컴포넌트 (클라이언트)
-export function DesignCreateForm() {
-  const methods = useForm<DesignCreateFormType>({
-    resolver: zodResolver(DesignCreateSchema),
+type DesignEditFormProps = {
+  design: Design;
+};
+
+// 디자인 수정 폼 컴포넌트 (클라이언트) — 기존 디자인 데이터로 초기화
+export function DesignEditForm({ design }: DesignEditFormProps) {
+  const methods = useForm<DesignEditFormType>({
+    resolver: zodResolver(DesignEditSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      isFree: false,
-      price: 0,
-      category: undefined,
-      images: [],
-      instructions: []
+      title: design.title,
+      description: design.description,
+      isFree: design.price === 0,
+      price: design.price,
+      category: design.category as DesignEditFormType['category'],
+      thumbnail: design.thumbnail,       // raw 스토리지 path
+      images: design.images,              // raw 스토리지 path[]
+      instructions: design.instructions   // raw 스토리지 path[]
     }
   });
 
   // 폼 제출 후 상세 페이지로 이동
   const router = useRouter();
 
-  // 디자인 등록 뮤테이션 — 성공 시 생성된 designId로 상세 페이지 이동
-  const { mutate, isPending, isError, error } = useCreateDesignMutation({
+  // 디자인 수정 뮤테이션 — 성공 시 상세 페이지로 이동
+  const { mutate, isPending, isError, error } = useUpdateDesignMutation({
     onSuccess: ({ designId }) => router.push(`/designs/${designId}`)
   });
 
   // 폼 액션 - 유효성 검사 후 뮤테이션 실행
-  const onSubmit = methods.handleSubmit(data => mutate(data));
+  const onSubmit = methods.handleSubmit(formData =>
+    mutate({
+      formData,
+      designId: design.id,
+      originalPaths: {
+        thumbnailPath: design.thumbnail,
+        imagePaths: design.images,
+        instructionPaths: design.instructions
+      }
+    })
+  );
 
   return (
     <FormProvider {...methods}>
@@ -49,12 +65,12 @@ export function DesignCreateForm() {
       <div
         className="px-8 pt-10 pb-18 text-center max-[640px]:px-5 max-[640px]:pt-7 max-[640px]:pb-15"
         style={{ background: 'linear-gradient(135deg, #211922 0%, #2a2230 100%)' }}>
-        <p className="text-primary mb-2.5 text-[11px] font-bold tracking-[1.8px]">NEW CREATION</p>
+        <p className="text-primary mb-2.5 text-[11px] font-bold tracking-[1.8px]">EDIT DESIGN</p>
         <h1 className="mb-2.5 text-[30px] font-bold tracking-tight text-white max-[640px]:text-2xl">
-          Share your creation
+          Edit your creation
         </h1>
         <p className="mx-auto max-w-130 text-[13px] leading-relaxed text-white/70">
-          Share your work with the MOC community. Add photos and instructions to reach more builders.
+          Update your design details, images, and instructions.
         </p>
       </div>
 
@@ -98,7 +114,7 @@ export function DesignCreateForm() {
         {/* 뮤테이션 에러 메시지 */}
         {isError ? (
           <p className="text-center text-[13px] text-red-500">
-            {error instanceof Error ? error.message : '등록 중 문제가 발생했어요. 다시 시도해주세요.'}
+            {error instanceof Error ? error.message : '수정 중 문제가 발생했어요. 다시 시도해주세요.'}
           </p>
         ) : null}
 
@@ -106,20 +122,8 @@ export function DesignCreateForm() {
         <div className="flex justify-end">
           <Button type="submit" size="lg" disabled={isPending} className="rounded-xl px-7 text-[14px] font-bold">
             <Check className="h-4 w-4" />
-            {isPending ? 'Publishing...' : 'Publish'}
+            {isPending ? 'Saving...' : 'Save'}
           </Button>
-
-          {/* <Button
-            size="lg"
-            variant="outline"
-            className="rounded-xl px-7 text-[14px] font-bold"
-            onClick={e => {
-              e.preventDefault();
-              console.log(methods.getValues());
-            }}>
-            <Check className="h-4 w-4" />
-            Check
-          </Button> */}
         </div>
       </form>
     </FormProvider>
@@ -141,7 +145,7 @@ function FormSection({ title, desc, children }: { title: string; desc?: string; 
 
 // 갤러리 카운트 레이블 — useWatch로 images 구독 격리
 function GalleryLabel() {
-  const images: File[] = useWatch({ name: 'images' });
+  const images: (File | string)[] = useWatch({ name: 'images' });
   return (
     <p className="text-muted-foreground mb-1.5 text-[11px] font-bold tracking-[0.3px]">Gallery ({images.length}/6)</p>
   );

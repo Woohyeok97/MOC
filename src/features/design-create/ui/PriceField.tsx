@@ -1,0 +1,64 @@
+'use client';
+
+import { useFormContext, useWatch } from 'react-hook-form';
+// types & schemas
+import type { DesignCreateFormType } from '../design-create.schema';
+
+// 가격 필드 (Free 체크박스 포함)
+export function PriceField() {
+  const { register, setValue, control, trigger, formState } = useFormContext<DesignCreateFormType>();
+  const { errors } = formState;
+  const isFree = useWatch({ control, name: 'isFree' });
+
+  // Free 토글 핸들러
+  const handleFreeToggle = (checked: boolean) => {
+    setValue('isFree', checked);
+    if (checked) setValue('price', 0); // 무료 전환 시 price 0으로 강제 리셋
+    if (formState.isSubmitted) trigger(); // isFree 변경시 유효성 검증 (onSubmit 클릭 이후에만 유효성 재검증)
+  };
+
+  return (
+    <div>
+      <div className="mb-2 flex items-center">
+        <label className="flex cursor-pointer items-center gap-1.5 pl-1 select-none">
+          <input
+            type="checkbox"
+            checked={isFree}
+            onChange={e => handleFreeToggle(e.target.checked)}
+            className="accent-primary h-3.5 w-3.5"
+          />
+          <span className="text-muted-foreground text-[12px] font-medium">Free</span>
+        </label>
+      </div>
+      <div
+        className={`bg-card flex items-center gap-2 rounded-xl border px-3.5 transition-[border-color,box-shadow] ${
+          errors.price
+            ? 'border-red-400'
+            : 'border-border focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(0,102,255,0.12)]'
+        }`}>
+        <span className="text-muted-foreground text-[14px] font-semibold">₩</span>
+        {isFree ? (
+          // key="free": React가 DOM 노드를 재사용하지 않도록 강제 언마운트
+          // (key 없으면 register가 주입한 value="0"이 DOM에 남아 placeholder가 가려짐)
+          <input
+            key="free"
+            type="text"
+            disabled
+            placeholder="Free"
+            className="text-surface-dark flex-1 py-3 text-[14px] outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          />
+        ) : (
+          <input
+            key="paid"
+            type="text"
+            inputMode="numeric"
+            placeholder="0"
+            {...register('price', { setValueAs: v => (v === '' ? 0 : Number(v)) })}
+            className="text-surface-dark flex-1 py-3 text-[14px] outline-none"
+          />
+        )}
+      </div>
+      {errors.price ? <p className="mt-1.5 text-[11px] text-red-500">{errors.price.message}</p> : null}
+    </div>
+  );
+}
