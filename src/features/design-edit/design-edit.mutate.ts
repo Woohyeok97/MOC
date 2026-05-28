@@ -5,7 +5,7 @@ import { createClient } from '@/shared/api/supabase/client';
 import { useAuthStore } from '@/features/auth/auth.store';
 import { uploadThumbnail, uploadGalleryImages, uploadInstructions } from '@/shared/api/supabase/storage';
 import { removeUserFiles } from '@/shared/api/supabase/storage.actions';
-import { updateDesign } from './design-edit.actions';
+import { updateDesign, deleteDesign } from './design-edit.actions';
 import type { DesignEditFormType } from './design-edit.schema';
 
 type UpdateDesignResult = { designId: string };
@@ -140,6 +140,16 @@ export function useUpdateDesignMutation(options?: UpdateDesignMutationOptions) {
 
       return result;
     },
+    ...options
+  });
+}
+
+type DeleteDesignMutationOptions = UseMutationOptions<void, Error, string>;
+
+// 디자인 삭제 useMutation 훅
+export function useDeleteDesignMutation(options?: DeleteDesignMutationOptions) {
+  return useMutation<void, Error, string>({
+    mutationFn: (designId: string) => deleteDesign(designId),
     ...options
   });
 }
