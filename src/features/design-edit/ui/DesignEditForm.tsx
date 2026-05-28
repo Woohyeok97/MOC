@@ -47,14 +47,15 @@ export function DesignEditForm({ design }: DesignEditFormProps) {
   });
 
   // 폼 액션 - 유효성 검사 후 뮤테이션 실행
-  const onSubmit = methods.handleSubmit(formData =>
+  const onSubmit = methods.handleSubmit(data =>
     mutate({
-      formData,
+      data,
       designId: design.id,
       originalPaths: {
         thumbnailPath: design.thumbnail,
         imagePaths: design.images,
-        instructionPaths: design.instructions
+        instructionPaths: design.instructions,
+        instructionNames: design.instructionNames
       }
     })
   );

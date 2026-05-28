@@ -95,7 +95,7 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                   key={index}
                   designId={designId}
                   index={index}
-                  label={`Instruction_${index + 1}.pdf`}
+                  label={design.instructionNames[index] || `Instruction_${index + 1}.pdf`}
                   isEnabled={viewerState === 'owner' || viewerState === 'bought' || viewerState === 'free'}
                 />
               ))}

@@ -14,6 +14,7 @@ type UpdateDesignItem = {
   thumbnailPath: string;
   imagePaths: string[];
   instructionPaths: string[];
+  instructionNames: string[];
 };
 
 // 디자인 수정 서버 액션 — 파일 업로드는 클라이언트에서 처리 후 path만 전달받음
@@ -36,7 +37,8 @@ export async function updateDesign(input: UpdateDesignItem): Promise<{ designId:
       price: input.price,
       thumbnail: input.thumbnailPath,
       images: input.imagePaths,
-      instructions: input.instructionPaths
+      instructions: input.instructionPaths,
+      instructionNames: input.instructionNames
     }
   });
 
