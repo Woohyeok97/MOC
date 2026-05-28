@@ -3,15 +3,20 @@ import { prisma } from '@/shared/api/prisma';
 import { createClient } from '@/shared/api/supabase/server';
 import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 import type { Design, DesignWithAuthor } from '@/entities/design/design.type';
-import { MOCK_DESIGNS } from './design.mock';
 
-// TODO: DB 연결 후 prisma.design.findMany로 교체
-export async function getDesigns(): Promise<Design[]> {
-  // return await prisma.design.findMany({
-  //   orderBy: { createdAt: 'desc' }
-  // });
-  return MOCK_DESIGNS.slice(0, 6);
-}
+export const getDesigns = cache(async (): Promise<DesignWithAuthor[]> => {
+  const designs = await prisma.design.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { author: true },
+  });
+
+  // thumbnail은 스토리지 path로 저장되어 있어 공개 URL로 변환
+  const supabase = await createClient();
+  return designs.map(design => ({
+    ...design,
+    thumbnail: getPublicImageUrl(supabase, design.thumbnail),
+  }));
+});
 
 // TODO: DB 연결 후 prisma.design.findUnique로 교체 (완료)
 // export async function getDesignById(id: string): Promise<Design | null> {
