@@ -4,17 +4,18 @@ import { createClient } from '@/shared/api/supabase/server';
 import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 import type { Design, DesignWithAuthor } from '@/entities/design/design.type';
 
+// 디자인 목록
 export const getDesigns = cache(async (): Promise<DesignWithAuthor[]> => {
   const designs = await prisma.design.findMany({
     orderBy: { createdAt: 'desc' },
-    include: { author: true },
+    include: { author: true }
   });
 
   // thumbnail은 스토리지 path로 저장되어 있어 공개 URL로 변환
   const supabase = await createClient();
   return designs.map(design => ({
     ...design,
-    thumbnail: getPublicImageUrl(supabase, design.thumbnail),
+    thumbnail: getPublicImageUrl(supabase, design.thumbnail)
   }));
 });
 

@@ -17,7 +17,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
     : designs;
 
   return (
-    <div className="columns-[200px] gap-[10px] p-4">
+    <div className="columns-[200px] gap-2.5 p-4">
       {filteredDesigns.map(design => (
         <DesignCard key={design.id} design={design} />
       ))}
