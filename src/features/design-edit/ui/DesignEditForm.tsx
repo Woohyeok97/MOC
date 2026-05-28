@@ -47,7 +47,7 @@ export function DesignEditForm({ design }: DesignEditFormProps) {
   });
 
   // 디자인 삭제 뮤테이션 — 성공 시 홈으로 이동
-  const { mutate: deleteDesign, isPending: isDeleting } = useDeleteDesignMutation({
+  const { mutate: deleteDesign, isPending: isDeleting, isError: isDeleteError, error: deleteError } = useDeleteDesignMutation({
     onSuccess: () => router.push('/')
   });
 
@@ -127,6 +127,11 @@ export function DesignEditForm({ design }: DesignEditFormProps) {
         {isError ? (
           <p className="text-center text-[13px] text-red-500">
             {error instanceof Error ? error.message : '수정 중 문제가 발생했어요. 다시 시도해주세요.'}
+          </p>
+        ) : null}
+        {isDeleteError ? (
+          <p className="text-center text-[13px] text-red-500">
+            {deleteError instanceof Error ? deleteError.message : '삭제 중 문제가 발생했어요. 다시 시도해주세요.'}
           </p>
         ) : null}
 
