@@ -46,10 +46,11 @@ export const getDesignByIdRaw = cache(async (id: string): Promise<Design | null>
   return await prisma.design.findUnique({ where: { id } });
 });
 
-export const getUserDesignList = cache(async (userId: string): Promise<Design[]> => {
+export const getUserDesignList = cache(async (userId: string): Promise<DesignWithAuthor[]> => {
   const designs = await prisma.design.findMany({
     where: { authorId: userId },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
+    include: { author: true }
   });
 
   // thumbnail, images는 스토리지 path로 저장되어 있어 공개 URL로 변환
