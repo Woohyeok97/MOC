@@ -13,8 +13,12 @@
       "mcp__playwright__browser_file_upload",
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_console_messagese",
+      "mcp__playwright__browser_hover",
       "mcp__playwright__navigate",
       "mcp__supabase__execute_sql"
     ]
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
   }
 }
