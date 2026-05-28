@@ -4,7 +4,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 // hooks
-import { useUpdateDesignMutation } from '../design-edit.mutate';
+import { useUpdateDesignMutation, useDeleteDesignMutation } from '../design-edit.mutate';
 // components
 import { Button } from '@/shared/ui/button';
 import { BasicInfoField } from './BasicInfoField';
@@ -13,7 +13,7 @@ import { ThumbnailField } from './ThumbnailField';
 import { ImageGridField } from './ImageGridField';
 import { InstructionsField } from './InstructionsField';
 // icons
-import { Check } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 // types & schemas
 import { DesignEditSchema, type DesignEditFormType } from '../design-edit.schema';
 import type { Design } from '@/entities/design/design.type';
@@ -45,6 +45,17 @@ export function DesignEditForm({ design }: DesignEditFormProps) {
   const { mutate, isPending, isError, error } = useUpdateDesignMutation({
     onSuccess: ({ designId }) => router.push(`/designs/${designId}`)
   });
+
+  // 디자인 삭제 뮤테이션 — 성공 시 홈으로 이동
+  const { mutate: deleteDesign, isPending: isDeleting } = useDeleteDesignMutation({
+    onSuccess: () => router.push('/')
+  });
+
+  // 삭제 핸들러
+  function handleDelete() {
+    if (!window.confirm('Are you sure you want to delete this design? This action cannot be undone.')) return;
+    deleteDesign(design.id);
+  }
 
   // 폼 액션 - 유효성 검사 후 뮤테이션 실행
   const onSubmit = methods.handleSubmit(data =>
@@ -119,9 +130,20 @@ export function DesignEditForm({ design }: DesignEditFormProps) {
           </p>
         ) : null}
 
-        {/* 제출 버튼 */}
-        <div className="flex justify-end">
-          <Button type="submit" size="lg" disabled={isPending} className="rounded-xl px-7 text-[14px] font-bold">
+        {/* 제출/삭제 버튼 */}
+        <div className="flex justify-end gap-2">
+          <Button
+            type="button"
+            size="lg"
+            variant="destructive"
+            disabled={isDeleting || isPending}
+            className="rounded-xl px-7 text-[14px] font-bold"
+            onClick={handleDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </Button>
+          <Button type="submit" size="lg" disabled={isPending || isDeleting} className="rounded-xl px-7 text-[14px] font-bold">
             <Check className="h-4 w-4" />
             {isPending ? 'Saving...' : 'Save'}
           </Button>
