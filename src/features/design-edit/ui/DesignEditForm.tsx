@@ -4,7 +4,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 // hooks
-import { useUpdateDesignMutation } from '../design-edit.mutate';
+import { useUpdateDesignMutation, useDeleteDesignMutation } from '../design-edit.mutate';
 // components
 import { Button } from '@/shared/ui/button';
 import { BasicInfoField } from './BasicInfoField';
@@ -13,7 +13,7 @@ import { ThumbnailField } from './ThumbnailField';
 import { ImageGridField } from './ImageGridField';
 import { InstructionsField } from './InstructionsField';
 // icons
-import { Check } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 // types & schemas
 import { DesignEditSchema, type DesignEditFormType } from '../design-edit.schema';
 import type { Design } from '@/entities/design/design.type';
@@ -46,15 +46,27 @@ export function DesignEditForm({ design }: DesignEditFormProps) {
     onSuccess: ({ designId }) => router.push(`/designs/${designId}`)
   });
 
+  // 디자인 삭제 뮤테이션 — 성공 시 홈으로 이동
+  const { mutate: deleteDesign, isPending: isDeleting, isError: isDeleteError, error: deleteError } = useDeleteDesignMutation({
+    onSuccess: () => router.push('/')
+  });
+
+  // 삭제 핸들러
+  function handleDelete() {
+    if (!window.confirm('Are you sure you want to delete this design? This action cannot be undone.')) return;
+    deleteDesign(design.id);
+  }
+
   // 폼 액션 - 유효성 검사 후 뮤테이션 실행
-  const onSubmit = methods.handleSubmit(formData =>
+  const onSubmit = methods.handleSubmit(data =>
     mutate({
-      formData,
+      data,
       designId: design.id,
       originalPaths: {
         thumbnailPath: design.thumbnail,
         imagePaths: design.images,
-        instructionPaths: design.instructions
+        instructionPaths: design.instructions,
+        instructionNames: design.instructionNames
       }
     })
   );
@@ -117,10 +129,26 @@ export function DesignEditForm({ design }: DesignEditFormProps) {
             {error instanceof Error ? error.message : '수정 중 문제가 발생했어요. 다시 시도해주세요.'}
           </p>
         ) : null}
+        {isDeleteError ? (
+          <p className="text-center text-[13px] text-red-500">
+            {deleteError instanceof Error ? deleteError.message : '삭제 중 문제가 발생했어요. 다시 시도해주세요.'}
+          </p>
+        ) : null}
 
-        {/* 제출 버튼 */}
-        <div className="flex justify-end">
-          <Button type="submit" size="lg" disabled={isPending} className="rounded-xl px-7 text-[14px] font-bold">
+        {/* 제출/삭제 버튼 */}
+        <div className="flex justify-end gap-2">
+          <Button
+            type="button"
+            size="lg"
+            variant="destructive"
+            disabled={isDeleting || isPending}
+            className="rounded-xl px-7 text-[14px] font-bold"
+            onClick={handleDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </Button>
+          <Button type="submit" size="lg" disabled={isPending || isDeleting} className="rounded-xl px-7 text-[14px] font-bold">
             <Check className="h-4 w-4" />
             {isPending ? 'Saving...' : 'Save'}
           </Button>

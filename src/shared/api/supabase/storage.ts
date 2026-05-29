@@ -40,8 +40,12 @@ export async function uploadGalleryImages(
   );
 }
 
-// 설명서 PDF 업로드 함수 -> 스토리지 path 배열 반환 (Instructions 버킷은 프라이빗)
-export async function uploadInstructions(supabase: SupabaseClient, files: File[], basePath: string): Promise<string[]> {
+// 설명서 PDF 업로드 함수 -> { path, name }[] 반환 (Instructions 버킷은 프라이빗, name은 다운로드 시 사용할 원본 파일명)
+export async function uploadInstructions(
+  supabase: SupabaseClient,
+  files: File[],
+  basePath: string
+): Promise<{ path: string; name: string }[]> {
   if (files.length === 0) return [];
 
   return Promise.all(
@@ -50,7 +54,7 @@ export async function uploadInstructions(supabase: SupabaseClient, files: File[]
       const path = `${basePath}/${crypto.randomUUID()}.${fileExtension}`; // 비ASCII 파일명(한글 등) 업로드 오류 방지를 위해 UUID로 대체
       const { error } = await supabase.storage.from(INSTRUCTIONS_BUCKET).upload(path, file);
       if (error) throw new Error(`설명서 업로드 실패: ${error.message}`);
-      return path;
+      return { path, name: file.name };
     })
   );
 }
@@ -69,23 +73,4 @@ export async function getSignedInstructionUrls(supabase: SupabaseClient, paths: 
 // Images 버킷 퍼블릭 이미지 Url 반환 함수 (렌더링용, 네트워크 요청 없음)
 export function getPublicImageUrl(supabase: SupabaseClient, path: string): string {
   return supabase.storage.from(IMAGES_BUCKET).getPublicUrl(path).data.publicUrl;
-}
-
-// 업로드 롤백 함수 -> DB 저장 실패 시 스토리지 파일 삭제
-export async function rollbackUploads(
-  supabase: SupabaseClient,
-  imagePaths: string[],
-  instructionPaths: string[]
-): Promise<void> {
-  try {
-    await Promise.all([
-      imagePaths.length > 0 ? supabase.storage.from(IMAGES_BUCKET).remove(imagePaths) : Promise.resolve(),
-      instructionPaths.length > 0
-        ? supabase.storage.from(INSTRUCTIONS_BUCKET).remove(instructionPaths)
-        : Promise.resolve()
-    ]);
-  } catch (error) {
-    // 롤백 실패는 사용자에게 노출하지 않음 — 추후 배치 정리로 대응
-    console.error('스토리지 롤백 실패:', error);
-  }
 }

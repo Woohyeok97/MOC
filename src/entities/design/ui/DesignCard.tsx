@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import type { Design } from '@/entities/design/design.type';
+import type { DesignWithAuthor } from '@/entities/design/design.type';
 
-export function DesignCard({ design }: { design: Design }) {
+export function DesignCard({ design }: { design: DesignWithAuthor }) {
   const thumbnailUrl = design.thumbnail || null;
 
   return (
@@ -35,7 +35,9 @@ export function DesignCard({ design }: { design: Design }) {
             </p>
             <div className="mt-1.5 flex items-center gap-1.5">
               <span className="inline-block h-4 w-4 shrink-0 rounded-full bg-[#e0e0d9]" />
-              <span className="text-[11px] text-white/85">{design.authorId}</span>
+              <span className="text-[11px] text-white/85">
+                {design.author.name ?? design.authorId}
+              </span>
               {design.price > 0 && (
                 <span className="text-[11px] text-white/60">· ₩{design.price.toLocaleString()}</span>
               )}

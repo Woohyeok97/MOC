@@ -28,12 +28,15 @@ export async function getInstructionUrl(designId: string, index: number): Promis
   const isPurchased = await getIsPurchased(user.id, designId);
   if (user.id !== design.authorId && !isPurchased) throw new Error('다운로드 권한이 없습니다.');
 
-  // 3. 해당 인덱스의 signed URL 생성 후 반환
+  // 3. 해당 인덱스의 signed URL 생성 후 반환 — 다운로드 시 원본 파일명으로 저장
   const path = design.instructions[index];
   if (!path) throw new Error('존재하지 않는 파일입니다.');
+  const downloadName = design.instructionNames[index] || `Instruction_${index + 1}.pdf`;
 
   const supabase = createServiceRoleClient();
-  const { data, error } = await supabase.storage.from('Instructions').createSignedUrl(path, 60);
+  const { data, error } = await supabase.storage.from('Instructions').createSignedUrl(path, 60, {
+    download: downloadName
+  });
   if (error || !data) throw new Error(`서명 URL 생성 실패: ${error?.message}`);
   return data.signedUrl;
 }
