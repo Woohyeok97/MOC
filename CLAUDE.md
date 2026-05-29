@@ -23,6 +23,8 @@ yarn format     # Prettier 포맷팅
 
 패키지 매니저: yarn (v4.9.3)
 
+Node 버전: `.nvmrc` 파일 참고. 패키지 설치나 `prisma` 명령어 실행 전 반드시 확인.
+
 ## 아키텍처
 
 Feature-Sliced Design (FSD) 아키텍처:
