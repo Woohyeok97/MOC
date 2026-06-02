@@ -5,12 +5,12 @@ import userEvent from '@testing-library/user-event';
 // component
 import { Header } from './Header';
 
-// next/navigation 모킹: router.replace 호출과 searchParams를 제어
-const replace = vi.fn();
+// next/navigation 모킹: router.push 호출과 searchParams를 제어
+const push = vi.fn();
 let currentParams = new URLSearchParams();
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ replace }),
+  useRouter: () => ({ push }),
   useSearchParams: () => currentParams,
 }));
 
@@ -26,7 +26,7 @@ vi.mock('@/features/auth/auth.actions', () => ({
 describe('Header 검색창', () => {
   beforeEach(() => {
     // 각 테스트 전 호출 기록과 쿼리 파라미터 초기화
-    replace.mockClear();
+    push.mockClear();
     currentParams = new URLSearchParams();
   });
 
@@ -36,8 +36,8 @@ describe('Header 검색창', () => {
 
     await userEvent.type(input, 'robot{Enter}');
 
-    expect(replace).toHaveBeenCalledTimes(1);
-    expect(replace).toHaveBeenCalledWith('/?query=robot');
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push).toHaveBeenCalledWith('/?query=robot');
   });
 
   it('검색어를 입력만 하고 Enter를 누르지 않으면 검색이 실행되지 않는다', async () => {
@@ -46,7 +46,7 @@ describe('Header 검색창', () => {
 
     await userEvent.type(input, 'robot');
 
-    expect(replace).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
   });
 
   it('기존 검색어를 비우고 Enter를 누르면 query 파라미터가 제거된다', async () => {
@@ -59,7 +59,7 @@ describe('Header 검색창', () => {
     await userEvent.clear(input);
     await userEvent.type(input, '{Enter}');
 
-    expect(replace).toHaveBeenCalledTimes(1);
-    expect(replace).toHaveBeenCalledWith('/?');
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push).toHaveBeenCalledWith('/?');
   });
 });

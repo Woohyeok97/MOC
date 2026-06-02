@@ -35,7 +35,7 @@ export function Header() {
     } else {
       params.delete('query');
     }
-    router.replace(`/?${params.toString()}`);
+    router.push(`/?${params.toString()}`);
   };
 
   return (

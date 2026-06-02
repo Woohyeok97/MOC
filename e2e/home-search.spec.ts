@@ -46,3 +46,21 @@ test('매칭 결과가 없으면 빈 상태 메시지를 보여준다', async ({
 
   await expect(page.getByText('검색 결과가 없어요')).toBeVisible();
 });
+
+test('검색 후 뒤로가기를 누르면 검색 전 전체 목록으로 돌아온다', async ({ page }) => {
+  await page.goto('/');
+  // 검색 전 전체 카드 수 기록
+  const beforeCount = await page.locator('a[href^="/designs/"]').count();
+  const title = await firstDesignTitle(page);
+  const keyword = title.slice(0, 2);
+
+  const searchBox = page.getByPlaceholder('검색');
+  await searchBox.fill(keyword);
+  await searchBox.press('Enter');
+  await expect(page).toHaveURL(/query=/);
+
+  // 뒤로가기 → 검색 전 홈(URL '/' + 전체 목록)으로 복귀
+  await page.goBack();
+  await expect(page).toHaveURL('/');
+  await expect(page.locator('a[href^="/designs/"]')).toHaveCount(beforeCount);
+});
