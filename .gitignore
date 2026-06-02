@@ -50,5 +50,7 @@ next-env.d.ts
 storage-delete-bug.md
 docs/testing-guide.md
 docs/e2e-testing.md
+docs/e2e-auth-setup.md
 /playwright-report/
 /test-results/
+e2e/.auth/
