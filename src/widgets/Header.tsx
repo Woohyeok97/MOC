@@ -1,8 +1,8 @@
 'use client';
 
-// components
-import { useState, type FormEvent } from 'react';
+import { Suspense, useState, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+// components
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search, LogOut, User } from 'lucide-react';
@@ -21,30 +21,7 @@ import { signOut } from '@/features/auth/auth.actions';
 
 // 상단 내비게이션 바 (로고 + 검색 + 아바타 드롭다운)
 export function Header() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const queryFromUrl = searchParams.get('query') ?? '';
-  const [searchValue, setSearchValue] = useState(queryFromUrl);
-  const [prevQueryFromUrl, setPrevQueryFromUrl] = useState(queryFromUrl);
   const user = useAuthStore(state => state.user);
-
-  // URL 변화(뒤로가기 등)에 따라 검색창 입력값을 동기화 — effect 대신 렌더 중에 처리
-  if (prevQueryFromUrl !== queryFromUrl) {
-    setPrevQueryFromUrl(queryFromUrl);
-    setSearchValue(queryFromUrl);
-  }
-
-  // 엔터(폼 submit) 시 현재 입력값을 URL 쿼리 파라미터에 반영 (빈 값이면 파라미터 제거)
-  const handleSearch = (event: FormEvent) => {
-    event.preventDefault();
-    const params = new URLSearchParams(searchParams.toString());
-    if (searchValue) {
-      params.set('query', searchValue);
-    } else {
-      params.delete('query');
-    }
-    router.push(`/?${params.toString()}`);
-  };
 
   return (
     <header className="flex h-13 shrink-0 items-center gap-3 border-b border-[#efefef] bg-white px-4">
@@ -54,24 +31,15 @@ export function Header() {
         <span className="bg-primary mb-1 inline-block h-1.5 w-1.5 rounded-full" />
       </Link>
 
-      {/* 검색창 */}
-      <form
-        onSubmit={handleSearch}
-        className="focus-within:border-primary flex flex-1 items-center gap-2 rounded-full border border-transparent bg-[#efefef] px-3.5 py-[7px] transition-all duration-150 focus-within:shadow-[0_0_0_3px_rgba(0,102,255,0.12)]">
-        <Search size={15} className="shrink-0 text-[#767676]" />
-        <input
-          type="text"
-          placeholder="검색"
-          value={searchValue}
-          onChange={event => setSearchValue(event.target.value)}
-          className="w-full bg-transparent text-[13px] text-[#211922] outline-none placeholder:text-[#767676]"
-        />
-      </form>
+      {/* 검색창 — useSearchParams를 Suspense로 격리해 정적 렌더링 보호 */}
+      <Suspense fallback={<div className="flex-1 rounded-full bg-[#efefef] py-[7px]" />}>
+        <SearchBar />
+      </Suspense>
 
       {/* 로그인 상태에 따라 아바타 드롭다운 또는 로그인 버튼 표시 */}
       {user ? (
         <DropdownMenu>
-          <DropdownMenuTrigger className="h-8.5 w-8.5 cursor-pointer overflow-hidden rounded-full bg-[#e0e0d9] ring-offset-0 outline-none transition-shadow duration-200 hover:ring-2 hover:ring-surface-dark data-[state=open]:ring-2 data-[state=open]:ring-surface-dark">
+          <DropdownMenuTrigger className="hover:ring-surface-dark data-[state=open]:ring-surface-dark h-8.5 w-8.5 cursor-pointer overflow-hidden rounded-full bg-[#e0e0d9] ring-offset-0 transition-shadow duration-200 outline-none hover:ring-2 data-[state=open]:ring-2">
             {user.avatarUrl ? (
               <Image
                 src={user.avatarUrl}
@@ -113,5 +81,46 @@ export function Header() {
         </Button>
       )}
     </header>
+  );
+}
+
+function SearchBar() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryFromUrl = searchParams.get('query') ?? '';
+  const [searchValue, setSearchValue] = useState(queryFromUrl);
+  const [prevQueryFromUrl, setPrevQueryFromUrl] = useState(queryFromUrl);
+
+  // URL 변화(뒤로가기 등)에 따라 검색창 입력값을 동기화 — effect 대신 렌더 중에 처리
+  if (prevQueryFromUrl !== queryFromUrl) {
+    setPrevQueryFromUrl(queryFromUrl);
+    setSearchValue(queryFromUrl);
+  }
+
+  // 엔터(폼 submit) 시 현재 입력값을 URL 쿼리 파라미터에 반영 (빈 값이면 파라미터 제거)
+  const handleSearch = (event: FormEvent) => {
+    event.preventDefault();
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchValue) {
+      params.set('query', searchValue);
+    } else {
+      params.delete('query');
+    }
+    router.push(`/?${params.toString()}`);
+  };
+
+  return (
+    <form
+      onSubmit={handleSearch}
+      className="focus-within:border-primary flex flex-1 items-center gap-2 rounded-full border border-transparent bg-[#efefef] px-3.5 py-[7px] transition-all duration-150 focus-within:shadow-[0_0_0_3px_rgba(0,102,255,0.12)]">
+      <Search size={15} className="shrink-0 text-[#767676]" />
+      <input
+        type="text"
+        placeholder="검색"
+        value={searchValue}
+        onChange={event => setSearchValue(event.target.value)}
+        className="w-full bg-transparent text-[13px] text-[#211922] outline-none placeholder:text-[#767676]"
+      />
+    </form>
   );
 }
