@@ -4,9 +4,10 @@ import { createClient } from '@/shared/api/supabase/server';
 import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 import type { Design, DesignWithAuthor } from '@/entities/design/design.type';
 
-// 디자인 목록
-export const getDesigns = cache(async (): Promise<DesignWithAuthor[]> => {
+// 디자인 목록 (query가 있으면 제목 기준 서버사이드 검색)
+export const getDesigns = cache(async (query?: string): Promise<DesignWithAuthor[]> => {
   const designs = await prisma.design.findMany({
+    where: query ? { title: { contains: query, mode: 'insensitive' } } : undefined,
     orderBy: { createdAt: 'desc' },
     include: { author: true }
   });
