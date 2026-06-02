@@ -59,8 +59,9 @@ test('검색 후 뒤로가기를 누르면 검색 전 전체 목록으로 돌아
   await searchBox.press('Enter');
   await expect(page).toHaveURL(/query=/);
 
-  // 뒤로가기 → 검색 전 홈(URL '/' + 전체 목록)으로 복귀
+  // 뒤로가기 → 검색 전 홈(URL '/' + 전체 목록 + 검색창 비워짐)으로 복귀
   await page.goBack();
   await expect(page).toHaveURL('/');
   await expect(page.locator('a[href^="/designs/"]')).toHaveCount(beforeCount);
+  await expect(page.getByPlaceholder('검색')).toHaveValue('');
 });

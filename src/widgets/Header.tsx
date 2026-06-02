@@ -1,7 +1,7 @@
 'use client';
 
 // components
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -25,6 +25,11 @@ export function Header() {
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState(searchParams.get('query') ?? '');
   const user = useAuthStore(state => state.user);
+
+  // URL 변화(뒤로가기 등)에 따라 검색창 입력값을 동기화
+  useEffect(() => {
+    setSearchValue(searchParams.get('query') ?? '');
+  }, [searchParams]);
 
   // 엔터(폼 submit) 시 현재 입력값을 URL 쿼리 파라미터에 반영 (빈 값이면 파라미터 제거)
   const handleSearch = (event: FormEvent) => {
