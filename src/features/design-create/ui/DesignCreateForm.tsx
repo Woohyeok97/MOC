@@ -8,7 +8,6 @@ import { useCreateDesignMutation } from '../design-create.mutate';
 // components
 import { Button } from '@/shared/ui/button';
 import { BasicInfoField } from './BasicInfoField';
-import { PriceField } from './PriceField';
 import { ThumbnailField } from './ThumbnailField';
 import { ImageGridField } from './ImageGridField';
 import { InstructionsField } from './InstructionsField';
@@ -24,8 +23,6 @@ export function DesignCreateForm() {
     defaultValues: {
       title: '',
       description: '',
-      isFree: false,
-      price: 0,
       category: undefined,
       images: [],
       instructions: []
@@ -88,11 +85,6 @@ export function DesignCreateForm() {
         {/* 설명서 */}
         <FormSection title="Instructions" desc="Attach a PDF to reach more builders">
           <InstructionsField />
-        </FormSection>
-
-        {/* 가격 */}
-        <FormSection title="Price" desc="Download price">
-          <PriceField />
         </FormSection>
 
         {/* 뮤테이션 에러 메시지 */}
