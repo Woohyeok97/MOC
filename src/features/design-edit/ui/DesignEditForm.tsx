@@ -8,7 +8,6 @@ import { useUpdateDesignMutation, useDeleteDesignMutation } from '../design-edit
 // components
 import { Button } from '@/shared/ui/button';
 import { BasicInfoField } from './BasicInfoField';
-import { PriceField } from './PriceField';
 import { ThumbnailField } from './ThumbnailField';
 import { ImageGridField } from './ImageGridField';
 import { InstructionsField } from './InstructionsField';
@@ -29,8 +28,6 @@ export function DesignEditForm({ design }: DesignEditFormProps) {
     defaultValues: {
       title: design.title,
       description: design.description,
-      isFree: design.price === 0,
-      price: design.price,
       category: design.category as DesignEditFormType['category'],
       thumbnail: design.thumbnail,       // raw 스토리지 path
       images: design.images,              // raw 스토리지 path[]
@@ -116,11 +113,6 @@ export function DesignEditForm({ design }: DesignEditFormProps) {
         {/* 설명서 */}
         <FormSection title="Instructions" desc="Attach a PDF to reach more builders">
           <InstructionsField />
-        </FormSection>
-
-        {/* 가격 */}
-        <FormSection title="Price" desc="Download price">
-          <PriceField />
         </FormSection>
 
         {/* 뮤테이션 에러 메시지 */}
