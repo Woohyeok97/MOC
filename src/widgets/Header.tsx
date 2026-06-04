@@ -32,7 +32,7 @@ export function Header() {
       </Link>
 
       {/* 검색창 — useSearchParams를 Suspense로 격리해 정적 렌더링 보호 */}
-      <Suspense fallback={<div className="flex-1 rounded-full bg-[#efefef] py-[7px]" />}>
+      <Suspense fallback={<div className="flex-1 rounded-full bg-[#efefef] py-1.75" />}>
         <SearchBar />
       </Suspense>
 
@@ -66,7 +66,8 @@ export function Header() {
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href="/designs/new" className="flex items-center gap-2.5">
-                <PenLine size={15} />디자인 만들기
+                <PenLine size={15} />
+                디자인 만들기
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -117,7 +118,7 @@ function SearchBar() {
   return (
     <form
       onSubmit={handleSearch}
-      className="focus-within:border-primary flex flex-1 items-center gap-2 rounded-full border border-transparent bg-[#efefef] px-3.5 py-[7px] transition-all duration-150 focus-within:shadow-[0_0_0_3px_rgba(0,102,255,0.12)]">
+      className="focus-within:border-primary flex flex-1 items-center gap-2 rounded-full border border-transparent bg-[#efefef] px-3.5 py-1.75 transition-all duration-150 focus-within:shadow-[0_0_0_3px_rgba(0,102,255,0.12)]">
       <Search size={15} className="shrink-0 text-[#767676]" />
       <input
         type="text"
