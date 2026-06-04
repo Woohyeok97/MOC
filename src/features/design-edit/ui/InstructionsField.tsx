@@ -88,7 +88,11 @@ export function InstructionsField() {
         );
       })}
 
-      {errors.instructions ? <p className="mt-1.5 text-[11px] text-red-500">{errors.instructions.message}</p> : null}
+      {errors.instructions?.message ? (
+        <p className="mt-1.5 text-[11px] text-red-500">{errors.instructions.message}</p>
+      ) : errors.instructions?.[0]?.message ? (
+        <p className="mt-1.5 text-[11px] text-red-500">{errors.instructions[0].message}</p>
+      ) : null}
     </div>
   );
 }
