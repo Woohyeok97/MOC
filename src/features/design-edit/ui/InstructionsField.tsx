@@ -1,13 +1,13 @@
 'use client';
 
 import { useRef } from 'react';
-import { useController, useFormContext, useWatch } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 // types & schemas
 import type { DesignEditFormType } from '../design-edit.schema';
 
 const MAX = 2;
 
-// PDF 설명서 업로드 필드 (최대 2개, 유료일 때 필수) — File(신규) | string(기존 path) 처리
+// PDF 설명서 업로드 필드 (최대 2개) — File(신규) | string(기존 path) 처리
 export function InstructionsField() {
   const { control, formState } = useFormContext<DesignEditFormType>();
   const { errors } = formState;
@@ -20,10 +20,6 @@ export function InstructionsField() {
 
   // 점진적 공개: 업로드된 파일 수 + 빈 슬롯 1개 (최대 MAX)
   const visibleCount = Math.min(instructionsField.value.length + 1, MAX);
-
-  // useWatch로 isFree 구독 — price > 0 대신 사용자 의도를 단일 소스로 참조
-  const isFree = useWatch({ control, name: 'isFree' });
-  const isPaid = !isFree;
 
   // 파일 선택 핸들러 - 선택된 파일을 배열 끝에 추가
   const handleFile = (file: File | undefined) => {
@@ -80,7 +76,7 @@ export function InstructionsField() {
                 Upload Instructions PDF ({instructionsField.value.length}/{MAX})
               </p>
               <p className="text-muted-foreground mt-0.5 text-[11px]">
-                {isPaid ? 'Required for paid designs' : 'Optional · Up to 2 files'}
+                Optional · Up to 2 files
               </p>
             </div>
             <span className="text-primary shrink-0 text-[12px] font-bold">Select File</span>
