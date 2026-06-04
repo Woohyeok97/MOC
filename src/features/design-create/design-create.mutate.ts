@@ -59,7 +59,6 @@ export function useCreateDesignMutation(options?: CreateDesignMutationOptions) {
           title: data.title,
           description: data.description,
           category: data.category,
-          price: data.price,
           thumbnailPath: uploadedThumbnail.path,
           imagePaths: uploadedGallery.map(img => img.path),
           instructionPaths: uploadedInstructions.map(instruction => instruction.path),
