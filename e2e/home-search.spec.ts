@@ -54,7 +54,7 @@ test('검색 후 뒤로가기를 누르면 검색 전 전체 목록으로 돌아
   const title = await firstDesignTitle(page);
   const keyword = title.slice(0, 2);
 
-  const searchBox = page.getByPlaceholder('검색');
+  const searchBox = page.getByPlaceholder('검색').first();
   await searchBox.fill(keyword);
   await searchBox.press('Enter');
   await expect(page).toHaveURL(/query=/);
@@ -63,5 +63,5 @@ test('검색 후 뒤로가기를 누르면 검색 전 전체 목록으로 돌아
   await page.goBack();
   await expect(page).toHaveURL('/');
   await expect(page.locator('a[href^="/designs/"]')).toHaveCount(beforeCount);
-  await expect(page.getByPlaceholder('검색')).toHaveValue('');
+  await expect(page.getByPlaceholder('검색').first()).toHaveValue('');
 });
