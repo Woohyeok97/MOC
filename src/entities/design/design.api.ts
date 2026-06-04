@@ -38,11 +38,6 @@ export const getDesignById = cache(async (id: string): Promise<DesignWithAuthor 
   };
 });
 
-// TODO: DB 연결 후 prisma.purchase.findUnique({ where: { userId_designId: { userId, designId } } })로 교체
-export async function getIsPurchased(_userId: string, _designId: string): Promise<boolean> {
-  return false;
-}
-
 // URL 변환 없이 raw DB 데이터 반환 — 수정 폼 초기값 세팅용
 export const getDesignByIdRaw = cache(async (id: string): Promise<Design | null> => {
   return await prisma.design.findUnique({ where: { id } });

@@ -38,9 +38,6 @@ export function DesignCard({ design }: { design: DesignWithAuthor }) {
               <span className="text-[11px] text-white/85">
                 {design.author.name ?? design.authorId}
               </span>
-              {design.price > 0 && (
-                <span className="text-[11px] text-white/60">· ₩{design.price.toLocaleString()}</span>
-              )}
             </div>
           </div>
         </div>
