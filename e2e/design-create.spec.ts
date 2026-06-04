@@ -24,25 +24,13 @@ test.describe('정상 경로', () => {
     await page.goto('/designs/new');
   });
 
-  test('무료 디자인 등록 후 상세 페이지로 이동한다', async ({ page }) => {
+  test('디자인 등록 후 상세 페이지로 이동한다', async ({ page }) => {
     await fillBasicInfo(page);
     await uploadThumbnail(page);
-    await page.getByRole('checkbox', { name: 'Free' }).check();
 
     await page.getByRole('button', { name: 'Publish' }).click();
 
     await expect(page.getByRole('button', { name: 'Publishing...' })).toBeVisible();
-    await expect(page).toHaveURL(/\/designs\/[^/]+$/, { timeout: 30000 });
-  });
-
-  test('유료 디자인 등록 후 상세 페이지로 이동한다', async ({ page }) => {
-    await fillBasicInfo(page);
-    await uploadThumbnail(page);
-    await page.locator('input[type="file"][accept=".pdf"]').setInputFiles(PDF);
-    await page.getByPlaceholder('0').fill('15000');
-
-    await page.getByRole('button', { name: 'Publish' }).click();
-
     await expect(page).toHaveURL(/\/designs\/[^/]+$/, { timeout: 30000 });
   });
 
@@ -100,39 +88,6 @@ test.describe('유효성 오류', () => {
     await page.getByRole('button', { name: 'Publish' }).click();
     await expect(page.getByText('Thumbnail is required.')).toBeVisible();
   });
-
-  test('유료 상태에서 가격 미입력 시 오류 메시지가 표시된다', async ({ page }) => {
-    // isFree=false (기본값), price=0 (기본값)
-    await fillBasicInfo(page);
-    await uploadThumbnail(page);
-    await page.locator('input[type="file"][accept=".pdf"]').setInputFiles(PDF);
-
-    await page.getByRole('button', { name: 'Publish' }).click();
-    await expect(page.getByText('Please set a price for paid designs.')).toBeVisible();
-  });
-
-  test('유료 상태에서 PDF 미업로드 시 오류 메시지가 표시된다', async ({ page }) => {
-    // isFree=false (기본값), instructions=[] (기본값)
-    await fillBasicInfo(page);
-    await uploadThumbnail(page);
-    await page.getByPlaceholder('0').fill('15000');
-
-    await page.getByRole('button', { name: 'Publish' }).click();
-    await expect(page.getByText('Please upload at least one instruction PDF for paid designs.')).toBeVisible();
-  });
-
-  test('Free 체크박스 체크 시 가격 오류가 사라진다', async ({ page }) => {
-    // 1. 유료 상태에서 Publish → 가격 오류 유발
-    await fillBasicInfo(page);
-    await uploadThumbnail(page);
-    await page.locator('input[type="file"][accept=".pdf"]').setInputFiles(PDF);
-    await page.getByRole('button', { name: 'Publish' }).click();
-    await expect(page.getByText('Please set a price for paid designs.')).toBeVisible();
-
-    // 2. Free 체크 → 오류 해소
-    await page.getByRole('checkbox', { name: 'Free' }).check();
-    await expect(page.getByText('Please set a price for paid designs.')).not.toBeVisible();
-  });
 });
 
 // ==================== 경계 케이스 ====================
@@ -167,11 +122,9 @@ test.describe('경계 케이스', () => {
     await expect(page.getByText(/Upload Instructions PDF/)).not.toBeVisible();
   });
 
-  test('갤러리 이미지 없이 무료 디자인을 등록할 수 있다', async ({ page }) => {
+  test('갤러리 이미지 없이 디자인을 등록할 수 있다', async ({ page }) => {
     await fillBasicInfo(page);
     await uploadThumbnail(page);
-    await page.getByRole('checkbox', { name: 'Free' }).check();
-    // 갤러리 이미지 미업로드
 
     await page.getByRole('button', { name: 'Publish' }).click();
     await expect(page).toHaveURL(/\/designs\/[^/]+$/, { timeout: 30000 });
@@ -196,7 +149,6 @@ test.describe('서버·네트워크 오류', () => {
     await page.goto('/designs/new');
     await fillBasicInfo(page);
     await uploadThumbnail(page);
-    await page.getByRole('checkbox', { name: 'Free' }).check();
 
     // Supabase Storage 요청 차단
     await page.route('**/storage/v1/object/**', route => route.abort());
