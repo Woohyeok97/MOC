@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 // components
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, LogOut, User } from 'lucide-react';
+import { Search, LogOut, User, PenLine } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
@@ -62,6 +62,11 @@ export function Header() {
             <DropdownMenuItem asChild>
               <Link href={`/profile/${user.id}`} className="flex items-center gap-2.5">
                 <User size={15} />내 프로필
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/designs/new" className="flex items-center gap-2.5">
+                <PenLine size={15} />디자인 만들기
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
