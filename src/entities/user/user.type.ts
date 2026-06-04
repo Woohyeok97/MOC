@@ -7,18 +7,3 @@ export interface UserProfileType {
   avatarUrl: string | null;
 }
 
-// 구매 내역 아이템 (mock 데이터 기반)
-export interface PurchaseItemType {
-  id: string;
-  amount: number;
-  purchasedAt: Date;
-  design: {
-    id: string;
-    title: string;
-    thumbnail: string;
-    author: {
-      name: string | null;
-      avatarUrl: string | null;
-    };
-  };
-}

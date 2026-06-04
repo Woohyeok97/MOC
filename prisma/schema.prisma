@@ -21,36 +21,19 @@ model User {
   avatarUrl String?          /// 프로필 이미지 URL (초기값: 구글 계정 아바타)
 
   designs   Design[]
-  purchases Purchase[]
 }
 
 model Design {
-  id           String         @id @default(uuid()) @db.Uuid /// 도안 고유 식별자
-  title        String                                        /// 도안 제목
-  description  String                                        /// 도안 설명
-  category     DesignCategory                                /// 도안 카테고리
-  price        Int            @default(0)                    /// 가격 (MVP: 0 고정, 이후 유료 확장 대비)
-  instructions String[]                                      /// 조립 설명서 PDF 스토리지 path 배열 (최대 2개)
-  instructionNames String[] @default([])                     /// 설명서 원본 파일명 배열 (instructions와 동일 인덱스 정렬)
-  thumbnail    String                                        /// 대표 썸네일 이미지 스토리지 path
-  images       String[]                                      /// 갤러리 이미지 스토리지 path 배열 (최대 6개)
-  authorId     String                                        /// 도안을 등록한 유저의 ID
-  author       User           @relation(fields: [authorId], references: [id])
-  createdAt    DateTime       @default(now())                /// 도안 등록 시각
-  updatedAt    DateTime       @updatedAt                     /// 도안 최근 수정 시각
-
-  purchases Purchase[]
-}
-
-model Purchase {
-  id          String   @id @default(uuid()) @db.Uuid /// 구매 이력 고유 식별자
-  userId      String                                  /// 구매한 유저의 ID
-  designId    String   @db.Uuid                       /// 구매한 도안의 ID
-  amount      Int      @default(0)                    /// 구매 시점 금액 스냅샷 (MVP: 0 고정)
-  purchasedAt DateTime @default(now())                /// 구매 시각
-
-  user   User   @relation(fields: [userId], references: [id])
-  design Design @relation(fields: [designId], references: [id])
-
-  @@unique([userId, designId]) /// 동일 유저-도안 중복 구매 방지
+  id               String         @id @default(uuid()) @db.Uuid
+  title            String
+  description      String
+  category         DesignCategory
+  instructions     String[]
+  instructionNames String[]       @default([])
+  thumbnail        String
+  images           String[]
+  authorId         String
+  author           User           @relation(fields: [authorId], references: [id])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }

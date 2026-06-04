@@ -6,11 +6,10 @@ import type { DesignCategory } from '@/entities/design/design.type';
 
 // DB 업로드용 디자인 타입
 type CreateDesignItem = {
-  id: string; // 스토리지 경로 키잉을 위해 클라이언트에서 생성한 디자인 ID
+  id: string;
   title: string;
   description: string;
   category: DesignCategory;
-  price: number;
   thumbnailPath: string;
   imagePaths: string[];
   instructionPaths: string[];
@@ -30,7 +29,6 @@ export async function createDesign(input: CreateDesignItem): Promise<{ designId:
       title: input.title,
       description: input.description,
       category: input.category,
-      price: input.price,
       thumbnail: input.thumbnailPath,
       images: input.imagePaths,
       instructions: input.instructionPaths,

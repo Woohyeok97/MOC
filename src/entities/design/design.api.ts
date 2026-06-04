@@ -4,9 +4,10 @@ import { createClient } from '@/shared/api/supabase/server';
 import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 import type { Design, DesignWithAuthor } from '@/entities/design/design.type';
 
-// 디자인 목록
-export const getDesigns = cache(async (): Promise<DesignWithAuthor[]> => {
+// 디자인 목록 (query가 있으면 제목 기준 서버사이드 검색)
+export const getDesigns = cache(async (query?: string): Promise<DesignWithAuthor[]> => {
   const designs = await prisma.design.findMany({
+    where: query ? { title: { contains: query, mode: 'insensitive' } } : undefined,
     orderBy: { createdAt: 'desc' },
     include: { author: true }
   });
@@ -36,11 +37,6 @@ export const getDesignById = cache(async (id: string): Promise<DesignWithAuthor 
     images: design.images.map(path => getPublicImageUrl(supabase, path))
   };
 });
-
-// TODO: DB 연결 후 prisma.purchase.findUnique({ where: { userId_designId: { userId, designId } } })로 교체
-export async function getIsPurchased(_userId: string, _designId: string): Promise<boolean> {
-  return false;
-}
 
 // URL 변환 없이 raw DB 데이터 반환 — 수정 폼 초기값 세팅용
 export const getDesignByIdRaw = cache(async (id: string): Promise<Design | null> => {

@@ -1,7 +1,9 @@
 'use client';
 
+// icons
 import { Download, LockKeyhole } from 'lucide-react';
-import { useGetInstructionMutation } from '@/features/design-purchase/purchase.mutate';
+// features
+import { useGetInstructionMutation } from '@/features/design-download/design-download.mutate';
 
 interface InstructionDownloadButtonProps {
   designId: string;
@@ -17,7 +19,6 @@ export function InstructionDownloadButton({ designId, index, label, isEnabled }:
     }
   });
 
-  // Instruction 다운로드 핸들러
   const handleDownloadInstruction = () => {
     if (!isEnabled) return;
     mutate({ designId, index });
@@ -26,7 +27,6 @@ export function InstructionDownloadButton({ designId, index, label, isEnabled }:
   return (
     <div className="bg-muted border-input flex items-center justify-between rounded-xl border px-3 py-2">
       <div className="flex items-center gap-3">
-        {/* <File /> */}
         <div
           className={`${isEnabled ? 'bg-primary' : 'bg-[#91918c]'} flex h-8 w-8 items-center justify-center rounded-lg`}>
           <span className="text-[8px] font-extrabold text-white">PDF</span>

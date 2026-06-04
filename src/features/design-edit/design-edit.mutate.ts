@@ -115,7 +115,6 @@ export function useUpdateDesignMutation(options?: UpdateDesignMutationOptions) {
           title: data.title,
           description: data.description,
           category: data.category,
-          price: data.price,
           thumbnailPath: finalThumbnailPath,
           imagePaths: finalImagePaths,
           instructionPaths: finalInstructionPaths,
