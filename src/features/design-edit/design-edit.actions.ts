@@ -11,7 +11,6 @@ type UpdateDesignItem = {
   title: string;
   description: string;
   category: DesignCategory;
-  price: number;
   thumbnailPath: string;
   imagePaths: string[];
   instructionPaths: string[];
@@ -35,7 +34,6 @@ export async function updateDesign(input: UpdateDesignItem): Promise<{ designId:
       title: input.title,
       description: input.description,
       category: input.category,
-      price: input.price,
       thumbnail: input.thumbnailPath,
       images: input.imagePaths,
       instructions: input.instructionPaths,
