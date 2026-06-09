@@ -3,15 +3,22 @@ import { prisma } from '@/shared/api/prisma';
 import { createClient } from '@/shared/api/supabase/server';
 import { getPublicImageUrl } from '@/shared/api/supabase/storage';
 import type { Design, DesignWithAuthor } from '@/entities/design/design.type';
-import { MOCK_DESIGNS } from './design.mock';
 
-// TODO: DB 연결 후 prisma.design.findMany로 교체
-export async function getDesigns(): Promise<Design[]> {
-  // return await prisma.design.findMany({
-  //   orderBy: { createdAt: 'desc' }
-  // });
-  return MOCK_DESIGNS.slice(0, 6);
-}
+// 디자인 목록 (query가 있으면 제목 기준 서버사이드 검색)
+export const getDesigns = cache(async (query?: string): Promise<DesignWithAuthor[]> => {
+  const designs = await prisma.design.findMany({
+    where: query ? { title: { contains: query, mode: 'insensitive' } } : undefined,
+    orderBy: { createdAt: 'desc' },
+    include: { author: true }
+  });
+
+  // thumbnail은 스토리지 path로 저장되어 있어 공개 URL로 변환
+  const supabase = await createClient();
+  return designs.map(design => ({
+    ...design,
+    thumbnail: getPublicImageUrl(supabase, design.thumbnail)
+  }));
+});
 
 // TODO: DB 연결 후 prisma.design.findUnique로 교체 (완료)
 // export async function getDesignById(id: string): Promise<Design | null> {
@@ -31,20 +38,16 @@ export const getDesignById = cache(async (id: string): Promise<DesignWithAuthor 
   };
 });
 
-// TODO: DB 연결 후 prisma.purchase.findUnique({ where: { userId_designId: { userId, designId } } })로 교체
-export async function getIsPurchased(_userId: string, _designId: string): Promise<boolean> {
-  return false;
-}
-
 // URL 변환 없이 raw DB 데이터 반환 — 수정 폼 초기값 세팅용
 export const getDesignByIdRaw = cache(async (id: string): Promise<Design | null> => {
   return await prisma.design.findUnique({ where: { id } });
 });
 
-export const getUserDesignList = cache(async (userId: string): Promise<Design[]> => {
+export const getUserDesignList = cache(async (userId: string): Promise<DesignWithAuthor[]> => {
   const designs = await prisma.design.findMany({
     where: { authorId: userId },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
+    include: { author: true }
   });
 
   // thumbnail, images는 스토리지 path로 저장되어 있어 공개 URL로 변환

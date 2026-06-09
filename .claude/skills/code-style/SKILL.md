@@ -1,41 +1,26 @@
 ---
 name: code-style
-description: 코드를 작성/수정/리팩토링할 때 항상 참고하는 코드 스타일 가이드. 비-관용적 패턴 회피, 명확한 네이밍, 가독성 좋은 코드를 위한 안티 패턴 카탈로그. 새 파일 작성, 함수 추가, 기존 코드 수정 시 자동 발동.
+description: 코드를 작성/수정/리팩토링할 때 항상 참고하는 코드 스타일 가이드. 명확한 네이밍, 가독성 좋은 코드를 위한 선호 패턴 카탈로그. 새 파일 작성, 함수 추가, 기존 코드 수정 시 자동 발동.
 ---
 
 # 코드 스타일 가이드
 
-이 카탈로그에 정의된 안티 패턴을 피하고 선호 패턴을 따를 것.
+이 카탈로그에 정의된 선호 패턴을 따를 것.
 새 코드 작성, 기존 코드 수정, 리팩토링 모든 경우에 적용.
 
 ## 적용 방식
 
-- 코드 작성 전 관련된 안티 패턴이 있는지 확인
+- 코드 작성 전 관련된 패턴이 있는지 확인
 - 코드 작성 중 패턴을 따르는지 점검
 - 작성 후 자가 검토 시 카탈로그와 대조
 
 ---
 
-## 안티 패턴 카탈로그
+## 선호 패턴 카탈로그
 
 ### CS-1: React/라이브러리 훅은 네임스페이스 없이 직접 임포트
 
 **원칙**: `React.useState()` 같은 네임스페이스 호출 대신, 필요한 훅을 직접 임포트해서 사용.
-
-**Before** (피할 패턴):
-
-```tsx
-import React from 'react';
-
-function Component() {
-  const [count, setCount] = React.useState(0);
-  React.useEffect(() => {
-    /* ... */
-  }, []);
-}
-```
-
-**After** (선호 패턴):
 
 ```tsx
 import { useState, useEffect } from 'react';
@@ -48,27 +33,13 @@ function Component() {
 }
 ```
 
-**왜**: 트리 쉐이킹 친화적이고, 코드가 짧아지고, React 커뮤니티의 관용적 스타일.
+**이유**: 트리 쉐이킹 친화적이고, 코드가 짧아지고, React 커뮤니티의 관용적 스타일.
 
 ---
 
 ### CS-2: map/filter 콜백 파라미터는 의미 있는 풀네임으로
 
 **원칙**: `arr.map(d => ...)`처럼 한 글자 약어 쓰지 말 것. 변수의 역할이 코드에서 즉시 파악되어야 함.
-
-**Before** (피할 패턴):
-
-```tsx
-{
-  designs.map(d => <DesignCard key={d.id} design={d} />);
-}
-
-{
-  users.filter(u => u.active).map(u => <UserRow user={u} />);
-}
-```
-
-**After** (선호 패턴):
 
 ```tsx
 {
@@ -80,9 +51,9 @@ function Component() {
 }
 ```
 
-**예외**: 진짜 의미 없는 인덱스나 좌표는 `i`, `x`, `y` 허용. 단 도메인 객체는 절대 한 글자 금지.
+**예외**: 인덱스는 'indext', 진짜 의미 없는 좌표는 `x`, `y` 허용. 단 도메인 객체는 절대 한 글자 금지.
 
-**왜**: 한 글자 변수는 읽을 때마다 "이게 뭐였지?"를 다시 생각하게 만듦. 풀네임은 인지 부하 0.
+**이유**: 한 글자 변수는 읽을 때마다 "이게 뭐였지?"를 다시 생각하게 만듦.
 
 ---
 
@@ -90,26 +61,14 @@ function Component() {
 
 **원칙**: 하나의 파일에 여러 컴포넌트가 있을 때, 메인(export default) 컴포넌트를 파일 상단에 먼저 배치하고 분리된 서브 컴포넌트는 아래에 배치.
 
-**Before** (피할 패턴):
-
-```tsx
-// 서브 컴포넌트가 먼저 등장
-function PurchaseList({ purchases }: { purchases: PurchaseItem[] }) {
-  return <ul>{/* ... */}</ul>;
-}
-
-// 메인 컴포넌트가 뒤에
-export default async function ProfilePage({ params }: { params: Params }) {
-  return <div><PurchaseList purchases={purchases} /></div>;
-}
-```
-
-**After** (선호 패턴):
-
 ```tsx
 // 메인 컴포넌트를 먼저
 export default async function ProfilePage({ params }: { params: Params }) {
-  return <div><PurchaseList purchases={purchases} /></div>;
+  return (
+    <div>
+      <PurchaseList purchases={purchases} />
+    </div>
+  );
 }
 
 // 서브 컴포넌트는 아래에
@@ -118,11 +77,40 @@ function PurchaseList({ purchases }: { purchases: PurchaseItem[] }) {
 }
 ```
 
-**왜**: 파일을 열었을 때 "이 파일이 무엇을 하는 파일인가"가 첫 줄에서 바로 보여야 함. 서브 컴포넌트를 먼저 보여주면 맥락 없이 세부 구현부터 읽게 되어 파악 속도가 느려짐.
+**이유**: 파일을 열었을 때 "이 파일이 무엇을 하는 파일인가"가 첫 줄에서 바로 보여야 함. 서브 컴포넌트를 먼저 보여주면 맥락 없이 세부 구현부터 읽게 되어 파악 속도가 느려짐.
 
 ---
 
-<!-- 새 안티 패턴은 여기 아래에 CS-4, CS-5, ... 형식으로 추가 -->
+### CS-4: useMutation 래핑 — 훅으로 캡슐화하고 콜백은 옵션으로 전달
+
+**원칙**: `useMutation`을 컴포넌트에 직접 쓰지 않고, `use[Feature]Mutation` 훅으로 래핑해서 사용. 성공/실패 콜백(`onSuccess`, `onError`)은 훅 호출 시 옵션으로 주입.
+
+```tsx
+// design-create.mutate.ts — 뮤테이션 훅 정의
+type CreateDesignMutationOptions = UseMutationOptions<
+  CreateDesignResult, // mutation 결과 타입
+  Error, // error 타입
+  DesignCreateFormType // mutation 파라미터 타입
+>;
+
+export function useCreateDesignMutation(options?: CreateDesignMutationOptions) {
+  return useMutation({
+    mutationFn: createDesign,
+    ...options
+  });
+}
+
+// DesignCreateForm.tsx — 컴포넌트에서 사용
+const { mutate, isPending, isError, error } = useCreateDesignMutation({
+  onSuccess: ({ designId }) => router.push(`/designs/${designId}`)
+});
+```
+
+**이유**: 뮤테이션 로직(API 호출, 에러 처리)과 UI 부수효과(라우팅, 토스트)를 분리할 수 있음. 컴포넌트는 "성공 시 어디로 갈지"만 알면 되고, 훅은 "어떻게 요청할지"만 담당.
+
+---
+
+<!-- 새 패턴은 여기 아래에 CS-5, CS-6, ... 형식으로 추가 -->
 
 ---
 
